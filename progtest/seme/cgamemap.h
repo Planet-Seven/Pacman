@@ -2,6 +2,9 @@
 constexpr int BOARDHEIGHT = 31;
 constexpr int BOARDWIDTH = 28;
 
+/** \class CGameMap
+A 2-d array and a set of constants to represent the game board.
+*/
 struct CGameMap
 {
     int coinCount = 242;

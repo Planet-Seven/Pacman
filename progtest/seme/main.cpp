@@ -13,6 +13,8 @@ constexpr int PLAYER_SPEED = 5;
 constexpr int WINDOW_WIDTH = 840; // choose a multiple of 28
 constexpr int WINDOW_HEIGHT = BOARDHEIGHT * (static_cast<double>(WINDOW_WIDTH) / BOARDWIDTH);
 
+////////////////////////////////////////////////////////////////////////////////
+/// initializes a SDL window
 void initializeWindow()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -29,6 +31,8 @@ void initializeWindow()
     renderer = SDL_CreateRenderer(window, -1, 0);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// destroys a SDL window
 void destroyWindow()
 {
     SDL_DestroyRenderer(renderer);
@@ -36,6 +40,11 @@ void destroyWindow()
     SDL_Quit();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+/// @param[in] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
+///
+/// Setup is run once before the game loop starts. Initializes gameObjects.
 void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
     std::vector<CPos> teleportPositions;
@@ -72,6 +81,11 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
     gameObjects.push_back(std::unique_ptr<CGameObject>(new CPortal(teleportPositions[1], teleportPositions[0])));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+/// @param[in] playing a boolean that maintains the game cycle.
+///
+/// Handles user input. Checks for escape and arrow keys.
 void processInput(CGameState &gamestate, bool &playing)
 {
     SDL_Event event;
@@ -98,11 +112,18 @@ void processInput(CGameState &gamestate, bool &playing)
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+/// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
+/// @param[in] lastFrameTime Time ellapsed from previous frame. Used for proper delta-time calculations
+///
+/// Runs once every frame. Used mainly to check for collisions and update game objects' and player's position.
 void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &lastFrameTime)
 {
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
 
+    // TODO - bound checking
     gamestate.thisMove = gamestate.nextMove;
 
     if (gamestate.thisMove == CGameState::CDirection::up)
@@ -117,9 +138,14 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     if (gamestate.thisMove == CGameState::CDirection::right)
         gamestate.playerPos.x += PLAYER_SPEED * deltaTime;
 
-    // update gameobjects
+    // TODO - update gameobjects
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] x x coordinate
+/// @param[in] y y cooridnate
+///
+/// Draws a simple wall object.
 void drawWall(int x, int y)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -132,6 +158,10 @@ void drawWall(int x, int y)
     SDL_RenderFillRect(renderer, &wall);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+///
+/// Draws the playing board.
 void drawMap(CGameState &gamestate)
 {
     for (int i = 0; i < BOARDHEIGHT; i++)
@@ -140,6 +170,10 @@ void drawMap(CGameState &gamestate)
                 drawWall(j, i);
 };
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+///
+/// Draws the player.
 void drawPlayer(CGameState &gamestate)
 {
     SDL_SetRenderDrawColor(renderer, 180, 180, 0, 255);
@@ -153,6 +187,11 @@ void drawPlayer(CGameState &gamestate)
     SDL_RenderFillRect(renderer, &player);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+/// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
+///
+/// Used to handle rendering. Runs once every frame.
 void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
     SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
@@ -160,7 +199,7 @@ void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &game
 
     drawMap(gamestate);
     drawPlayer(gamestate);
-    // draw gameobjects
+    // TODO - draw gameobjects
 
     SDL_RenderPresent(renderer);
 }

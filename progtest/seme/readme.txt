@@ -36,3 +36,7 @@ Update bude přijímat referenci na gamestate, což je kontext potřebný k prov
 Sesbíratelné předměty budou porovnávat polohu hráče se svou polohou, aby případně detekovaly sebrání.
 
 Draw bude bezparametrické, vykreslí předmět na jeho pozici za použití knihovny SDL2.
+
+---KONTROLNÍ BOD---
+Pro kontrolní bod implementuji hlavičkové soubory většiny tříd a ucelený gameloop v souboru main.cpp. Gameloop je  framerate-independent a správně pracuje s časem mezi snímky (implementace delta time).
+Soubor je zkompilovatelný, po spuštění vykreslí herní mapu a hráče. Umožňuje jednoduché ovládání bez kontroly omezení herního pole.
