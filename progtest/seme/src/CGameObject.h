@@ -1,5 +1,5 @@
 #pragma once
-#include "cgamestate.h"
+#include "CGameState.h"
 
 /** \class CGameObject
 An abstract class that serves as the base for all game objects (ghosts and collectibles).

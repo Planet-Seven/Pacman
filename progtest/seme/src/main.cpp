@@ -3,8 +3,8 @@
 #include <memory>
 #include <iostream>
 #include <SDL2/SDL.h>
-#include "cghost.h"
-#include "ccollectible.h"
+#include "CGhost.h"
+#include "CCollectible.h"
 
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;

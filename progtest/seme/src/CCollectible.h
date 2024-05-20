@@ -1,5 +1,5 @@
 #pragma once
-#include "cgameobject.h"
+#include "CGameObject.h"
 
 /** \class CCollectible
 An abstract class that serves as the parent class of individual collectible items.s
@@ -9,7 +9,7 @@ class CCollectible : public CGameObject
 public:
     CCollectible(CPos pos) : pos(pos){};
     virtual void doEffect(CGameState &gamestate) = 0;
-    virtual void update(CGameState &gamestate) override {}; // definition so that we can compile without .cpp source files.
+    virtual void update(CGameState &gamestate) override;
 
 protected:
     CPos pos;
@@ -23,8 +23,8 @@ class CCoin : public CCollectible
 {
 public:
     CCoin(CPos pos) : CCollectible(pos){};
-    virtual void doEffect(CGameState &gamestate) override {};
-    virtual void draw() override {};
+    virtual void doEffect(CGameState &gamestate) override;
+    virtual void draw() override;
 };
 
 /** \class CPowerUp
@@ -34,8 +34,8 @@ class CPowerUp : public CCollectible
 {
 public:
     CPowerUp(CPos pos) : CCollectible(pos){};
-    virtual void doEffect(CGameState &gamestate) override {};
-    virtual void draw() override {};
+    virtual void doEffect(CGameState &gamestate) override;
+    virtual void draw() override;
 };
 
 /** \class CPortal
@@ -45,8 +45,8 @@ class CPortal : public CCollectible
 {
 public:
     CPortal(CPos pos, CPos linkPos) : CCollectible(pos), linkPos(linkPos){};
-    virtual void doEffect(CGameState &gamestate) override {};
-    virtual void draw() override {};
+    virtual void doEffect(CGameState &gamestate) override;
+    virtual void draw() override;
 
 private:
     CPos linkPos;

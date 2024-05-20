@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cpos.h"
-#include "cgamemap.h"
+#include "CPos.h"
+#include "CGameMap.h"
 
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
