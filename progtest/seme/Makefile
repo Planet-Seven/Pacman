@@ -3,7 +3,7 @@ all: build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o
 	g++ -Wall -pedantic build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o -lSDL2 -o pac.out
 	./pac.out
 
-build/main.o: build/CGhost.o build/CCollectible.o
+build/main.o: build/CGhost.o build/CCollectible.o build/CGameState.o
 	mkdir -p build
 	g++ -Wall -pedantic -std=c++20 -c src/main.cpp -o build/main.o
 

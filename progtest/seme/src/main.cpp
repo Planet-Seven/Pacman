@@ -104,6 +104,8 @@ void processInput(CGameState &gamestate, bool &playing)
             gamestate.nextMove = CGameState::CDirection::left;
         if (event.key.keysym.sym == SDLK_RIGHT)
             gamestate.nextMove = CGameState::CDirection::right;
+        if (event.key.keysym.sym == SDLK_p)
+            std::cout << "x: " << gamestate.playerPos.x << " y: " << gamestate.playerPos.y << std::endl;
         break;
     }
 }
@@ -169,8 +171,8 @@ void drawPlayer(CGameState &gamestate)
         {
             static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * gamestate.playerPos.x),
             static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * gamestate.playerPos.y),
-            static_cast<int>(WINDOW_WIDTH / (static_cast<double>(BOARDWIDTH) * 1.1)),
-            static_cast<int>(WINDOW_HEIGHT / (static_cast<double>(BOARDHEIGHT) * 1.1))};
+            static_cast<int>(WINDOW_WIDTH / (static_cast<double>(BOARDWIDTH))),
+            static_cast<int>(WINDOW_HEIGHT / (static_cast<double>(BOARDHEIGHT)))};
     SDL_RenderFillRect(renderer, &player);
 }
 
