@@ -9,10 +9,6 @@
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;
 
-constexpr int PLAYER_SPEED = 5;
-constexpr int WINDOW_WIDTH = 840; // choose a multiple of 28
-constexpr int WINDOW_HEIGHT = BOARDHEIGHT * (static_cast<double>(WINDOW_WIDTH) / BOARDWIDTH);
-
 ////////////////////////////////////////////////////////////////////////////////
 /// initializes a SDL window
 void initializeWindow()
@@ -123,20 +119,11 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
 
-    // TODO - bound checking
-    gamestate.thisMove = gamestate.nextMove;
+    if (gamestate.isNextMoveLegal())
+        gamestate.updateMoves();
 
-    if (gamestate.thisMove == CGameState::CDirection::up)
-        gamestate.playerPos.y -= PLAYER_SPEED * deltaTime;
-
-    if (gamestate.thisMove == CGameState::CDirection::down)
-        gamestate.playerPos.y += PLAYER_SPEED * deltaTime;
-
-    if (gamestate.thisMove == CGameState::CDirection::left)
-        gamestate.playerPos.x -= PLAYER_SPEED * deltaTime;
-
-    if (gamestate.thisMove == CGameState::CDirection::right)
-        gamestate.playerPos.x += PLAYER_SPEED * deltaTime;
+    if (gamestate.isThisMoveLegal())
+        gamestate.updatePos(deltaTime);
 
     // TODO - update gameobjects
 }
