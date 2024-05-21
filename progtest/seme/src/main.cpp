@@ -121,11 +121,11 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
 
-    if (gamestate.isNextMoveLegal())
-        gamestate.updateMoves();
-
     if (gamestate.isThisMoveLegal())
         gamestate.updatePos(deltaTime);
+
+    if (gamestate.isNextMoveLegal())
+        gamestate.updateMoves();
 
     // TODO - update gameobjects
 }
