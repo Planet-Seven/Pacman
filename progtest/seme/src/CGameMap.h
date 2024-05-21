@@ -7,7 +7,7 @@ A 2-d array and a set of constants to represent the game board.
 */
 struct CGameMap
 {
-    int coinCount = 242;
+    int coinCount = 240;
 
     enum CMapObjects
     {
@@ -24,7 +24,7 @@ struct CGameMap
         {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W},
         {W, C, C, C, C, C, C, C, C, C, C, C, C, W, W, C, C, C, C, C, C, C, C, C, C, C, C, W},
         {W, C, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
-        {W, P, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
+        {W, P, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, P, W},
         {W, C, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
         {W, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, W},
         {W, C, W, W, W, W, C, W, W, C, W, W, W, W, W, W, W, W, C, W, W, C, W, W, W, W, C, W},
@@ -44,7 +44,7 @@ struct CGameMap
         {W, C, C, C, C, C, C, C, C, C, C, C, C, W, W, C, C, C, C, C, C, C, C, C, C, C, C, W},
         {W, C, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
         {W, C, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
-        {W, P, C, C, W, W, C, C, C, C, C, C, C, S, O, C, C, C, C, C, C, C, W, W, C, C, C, W},
+        {W, P, C, C, W, W, C, C, C, C, C, C, C, S, O, C, C, C, C, C, C, C, W, W, C, C, P, W},
         {W, W, W, C, W, W, C, W, W, C, W, W, W, W, W, W, W, W, C, W, W, C, W, W, C, W, W, W},
         {W, W, W, C, W, W, C, W, W, C, W, W, W, W, W, W, W, W, C, W, W, C, W, W, C, W, W, W},
         {W, C, C, C, C, C, C, W, W, C, C, C, C, W, W, C, C, C, C, W, W, C, C, C, C, C, C, W},

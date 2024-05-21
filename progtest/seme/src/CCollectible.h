@@ -24,7 +24,7 @@ class CCoin : public CCollectible
 public:
     CCoin(CPos pos) : CCollectible(pos){};
     virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw() override;
+    virtual void draw(SDL_Renderer *renderer) override;
 };
 
 /** \class CPowerUp
@@ -35,5 +35,5 @@ class CPowerUp : public CCollectible
 public:
     CPowerUp(CPos pos) : CCollectible(pos){};
     virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw() override;
+    virtual void draw(SDL_Renderer *renderer) override;
 };

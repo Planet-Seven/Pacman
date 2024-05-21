@@ -6,12 +6,9 @@
 #include "CGhost.h"
 #include "CCollectible.h"
 
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
-
 ////////////////////////////////////////////////////////////////////////////////
 /// initializes a SDL window
-void initializeWindow()
+void initializeWindow(SDL_Renderer *&renderer, SDL_Window *&window)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         std::cout << "Error initializing SDL." << std::endl;
@@ -21,7 +18,7 @@ void initializeWindow()
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WINDOW_WIDTH,
-        WINDOW_HEIGHT,
+        WINDOW_HEIGHT + BOTTOM_PADDING,
         SDL_WINDOW_BORDERLESS);
 
     renderer = SDL_CreateRenderer(window, -1, 0);
@@ -29,7 +26,7 @@ void initializeWindow()
 
 ////////////////////////////////////////////////////////////////////////////////
 /// destroys a SDL window
-void destroyWindow()
+void destroyWindow(SDL_Renderer *renderer, SDL_Window *window)
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -99,7 +96,7 @@ void processInput(CGameState &gamestate, bool &playing)
         if (event.key.keysym.sym == SDLK_RIGHT)
             gamestate.nextMove = CGameState::CDirection::right;
         if (event.key.keysym.sym == SDLK_p)
-            std::cout << "x: " << gamestate.playerPos.x << " y: " << gamestate.playerPos.y << std::endl;
+            std::cout << gamestate.gameMap.coinCount << std::endl;
         break;
     }
 }
@@ -131,9 +128,9 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 /// @param[in] y y cooridnate
 ///
 /// Draws a simple wall object.
-void drawWall(int x, int y)
+void drawWall(int x, int y, SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 50, 255);
 
     SDL_Rect wall =
         {static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * x),
@@ -147,19 +144,19 @@ void drawWall(int x, int y)
 /// @param[in] gamestate a gamestate variable
 ///
 /// Draws the playing board.
-void drawMap(CGameState &gamestate)
+void drawMap(CGameState &gamestate, SDL_Renderer *renderer)
 {
     for (int i = 0; i < BOARDHEIGHT; i++)
         for (int j = 0; j < BOARDWIDTH; j++)
             if (gamestate.gameMap.map[i][j] == gamestate.gameMap.CMapObjects::W)
-                drawWall(j, i);
+                drawWall(j, i, renderer);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @param[in] gamestate a gamestate variable
 ///
 /// Draws the player.
-void drawPlayer(CGameState &gamestate)
+void drawPlayer(CGameState &gamestate, SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawColor(renderer, 180, 180, 0, 255);
 
@@ -172,28 +169,44 @@ void drawPlayer(CGameState &gamestate)
     SDL_RenderFillRect(renderer, &player);
 }
 
+void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer)
+{
+    for (auto const &gameObject : gameObjects)
+        gameObject->draw(renderer);
+}
+
+void drawGUI(CGameState &gamestate, SDL_Renderer *renderer)
+{
+    // TODO
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @param[in] gamestate a gamestate variable
 /// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
 ///
 /// Used to handle rendering. Runs once every frame.
-void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
+void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer)
 {
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    drawMap(gamestate);
-    drawPlayer(gamestate);
-    // TODO - draw gameobjects
+    drawMap(gamestate, renderer);
+    drawGameObjects(gamestate, gameObjects, renderer);
+    drawPlayer(gamestate, renderer);
+    drawGUI(gamestate, renderer);
 
     SDL_RenderPresent(renderer);
 }
 
 int main()
 {
+
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
+
     CGameState gamestate;
     std::vector<std::unique_ptr<CGameObject>> gameObjects;
-    initializeWindow();
+    initializeWindow(renderer, window);
     setup(gamestate, gameObjects);
 
     bool playing = true;
@@ -202,10 +215,10 @@ int main()
     {
         processInput(gamestate, playing);
         update(gamestate, gameObjects, lastFrameTime);
-        draw(gamestate, gameObjects);
+        draw(gamestate, gameObjects, renderer);
     }
 
-    destroyWindow();
+    destroyWindow(renderer, window);
 
     return 0;
 }

@@ -8,13 +8,15 @@
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
 */
-constexpr int PLAYER_SPEED = 5;
+constexpr int PLAYER_SPEED = 4;
 constexpr int WINDOW_WIDTH = 840; // choose a multiple of 28
 constexpr int WINDOW_HEIGHT = BOARDHEIGHT * (static_cast<double>(WINDOW_WIDTH) / BOARDWIDTH);
+constexpr int BOTTOM_PADDING = 100;
 
 struct CGameState
 {
-    int level;
+    int level = 0;
+    int score = 0;
     CPos playerPos;
 
     enum class CGameMode

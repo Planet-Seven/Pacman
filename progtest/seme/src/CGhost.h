@@ -43,7 +43,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
-    virtual void draw() override;
+    virtual void draw(SDL_Renderer *renderer) override;
 };
 
 /** \class CEuclid
@@ -64,7 +64,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
-    virtual void draw() override;
+    virtual void draw(SDL_Renderer *renderer) override;
 };
 
 /** \class CManhattan
@@ -85,5 +85,5 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
-    virtual void draw() override;
+    virtual void draw(SDL_Renderer *renderer) override;
 };
