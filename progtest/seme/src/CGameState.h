@@ -13,6 +13,8 @@ constexpr int WINDOW_WIDTH = 840; // choose a multiple of 28
 constexpr int WINDOW_HEIGHT = BOARDHEIGHT * (static_cast<double>(WINDOW_WIDTH) / BOARDWIDTH);
 constexpr int BOTTOM_PADDING = 100;
 
+constexpr int FONT_SIZE = 20;
+
 struct CGameState
 {
     int level = 0;

@@ -1,6 +1,7 @@
 all: build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o
 	mkdir -p build
-	g++ -Wall -pedantic build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o -lSDL2 -o pac.out
+	g++ -Wall -pedantic build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pac.out
+	pwd
 	./pac.out
 
 build/main.o: build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o

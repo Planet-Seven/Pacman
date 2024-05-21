@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "CGhost.h"
 #include "CCollectible.h"
 
@@ -12,6 +13,9 @@ void initializeWindow(SDL_Renderer *&renderer, SDL_Window *&window)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         std::cout << "Error initializing SDL." << std::endl;
+
+    if (TTF_Init() != 0)
+        std::cout << "Error initializing TTF." << std::endl;
 
     window = SDL_CreateWindow(
         NULL,
@@ -33,6 +37,17 @@ void destroyWindow(SDL_Renderer *renderer, SDL_Window *window)
     SDL_Quit();
 }
 
+void openFont(TTF_Font *&font)
+{
+    std::string fontPath = "assets/fonts/Pixelmania.ttf";
+    font = TTF_OpenFont(fontPath.c_str(), FONT_SIZE);
+}
+
+void closeFont(TTF_Font *font)
+{
+    TTF_CloseFont(font);
+    TTF_Quit();
+}
 ////////////////////////////////////////////////////////////////////////////////
 /// @param[in] gamestate a gamestate variable
 /// @param[in] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
@@ -175,9 +190,33 @@ void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObj
         gameObject->draw(renderer);
 }
 
-void drawGUI(CGameState &gamestate, SDL_Renderer *renderer)
+void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
-    // TODO
+    SDL_Color textColor = {255, 255, 255};
+    std::string scoreText = "SCORE " + std::to_string(gamestate.score);
+    int textWidth = 0;
+    int textHeight = 0;
+
+    SDL_Texture *fontTexture = nullptr;
+
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, scoreText.c_str(), textColor);
+    fontTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+    if (textSurface != nullptr)
+    {
+        textWidth = textSurface->w;
+        textHeight = textSurface->h;
+    }
+
+    SDL_Rect dst = {
+        WINDOW_WIDTH / 2 - textWidth / 2,
+        WINDOW_HEIGHT + BOTTOM_PADDING / 2 - textHeight / 2,
+        textWidth,
+        textHeight};
+    SDL_RenderCopy(renderer, fontTexture, NULL, &dst);
+
+    SDL_FreeSurface(textSurface); // cleanup
+    SDL_DestroyTexture(fontTexture);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +224,7 @@ void drawGUI(CGameState &gamestate, SDL_Renderer *renderer)
 /// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
 ///
 /// Used to handle rendering. Runs once every frame.
-void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer)
+void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -193,7 +232,7 @@ void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &game
     drawMap(gamestate, renderer);
     drawGameObjects(gamestate, gameObjects, renderer);
     drawPlayer(gamestate, renderer);
-    drawGUI(gamestate, renderer);
+    drawGUI(gamestate, renderer, font);
 
     SDL_RenderPresent(renderer);
 }
@@ -203,10 +242,12 @@ int main()
 
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
+    TTF_Font *font = nullptr;
 
     CGameState gamestate;
     std::vector<std::unique_ptr<CGameObject>> gameObjects;
     initializeWindow(renderer, window);
+    openFont(font);
     setup(gamestate, gameObjects);
 
     bool playing = true;
@@ -215,9 +256,10 @@ int main()
     {
         processInput(gamestate, playing);
         update(gamestate, gameObjects, lastFrameTime);
-        draw(gamestate, gameObjects, renderer);
+        draw(gamestate, gameObjects, renderer, font);
     }
 
+    closeFont(font);
     destroyWindow(renderer, window);
 
     return 0;
