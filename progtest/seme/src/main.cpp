@@ -56,6 +56,7 @@ void closeFont(TTF_Font *font)
 void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
     std::vector<CPos> teleportPositions;
+    int coinCount = 0;
 
     for (int i = 0; i < BOARDHEIGHT; i++)
         for (int j = 0; j < BOARDWIDTH; j++)
@@ -63,6 +64,7 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
             switch (gamestate.gameMap.map[i][j])
             {
             case (gamestate.gameMap.CMapObjects::C):
+                coinCount++;
                 gameObjects.push_back(std::unique_ptr<CGameObject>(new CCoin(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::P):
@@ -81,6 +83,8 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
                 gameObjects.push_back(std::unique_ptr<CGameObject>(new CEuclid(CPos(j, i))));
                 break;
             }
+
+    gamestate.gameMap.coinCount = coinCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +128,12 @@ void processInput(CGameState &gamestate, bool &playing)
 /// Runs once every frame. Used mainly to check for collisions and update game objects' and player's position.
 void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &lastFrameTime)
 {
+    if (gamestate.gameMap.coinCount == 0)
+    {
+        gamestate.level++;
+        setup(gamestate, gameObjects);
+    }
+
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
 
