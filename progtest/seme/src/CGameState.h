@@ -17,7 +17,7 @@ constexpr int FONT_SIZE = 20;
 
 struct CGameState
 {
-    int level = 0;
+    int level = 1;
     int score = 0;
     CPos playerPos;
 

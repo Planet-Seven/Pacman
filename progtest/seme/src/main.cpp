@@ -190,16 +190,14 @@ void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObj
         gameObject->draw(renderer);
 }
 
-void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
+void drawText(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, int y)
 {
     SDL_Color textColor = {255, 255, 255};
-    std::string scoreText = "SCORE " + std::to_string(gamestate.score);
     int textWidth = 0;
     int textHeight = 0;
 
     SDL_Texture *fontTexture = nullptr;
-
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, scoreText.c_str(), textColor);
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
     fontTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
     if (textSurface != nullptr)
@@ -209,14 +207,32 @@ void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
     }
 
     SDL_Rect dst = {
-        WINDOW_WIDTH / 2 - textWidth / 2,
-        WINDOW_HEIGHT + BOTTOM_PADDING / 2 - textHeight / 2,
+        x - textWidth / 2,
+        y - textHeight / 2,
         textWidth,
         textHeight};
     SDL_RenderCopy(renderer, fontTexture, NULL, &dst);
 
     SDL_FreeSurface(textSurface); // cleanup
     SDL_DestroyTexture(fontTexture);
+}
+
+void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
+{
+    std::string scoreText = "SCORE " + std::to_string(gamestate.score);
+    std::string levelText = "LEVEL " + std::to_string(gamestate.level);
+    drawText(gamestate,
+             renderer,
+             font,
+             scoreText,
+             WINDOW_WIDTH * 0.33,
+             WINDOW_HEIGHT + BOTTOM_PADDING / 2);
+    drawText(gamestate,
+             renderer,
+             font,
+             levelText,
+             WINDOW_WIDTH * 0.66,
+             WINDOW_HEIGHT + BOTTOM_PADDING / 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
