@@ -37,17 +37,3 @@ public:
     virtual void doEffect(CGameState &gamestate) override;
     virtual void draw() override;
 };
-
-/** \class CPortal
-A class that represents a portal that allows teleport the player.
-*/
-class CPortal : public CCollectible
-{
-public:
-    CPortal(CPos pos, CPos linkPos) : CCollectible(pos), linkPos(linkPos){};
-    virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw() override;
-
-private:
-    CPos linkPos;
-};

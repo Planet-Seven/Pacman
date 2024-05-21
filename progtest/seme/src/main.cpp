@@ -51,30 +51,24 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
             switch (gamestate.gameMap.map[i][j])
             {
             case (gamestate.gameMap.CMapObjects::C):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CCoin(CPos(i, j))));
+                gameObjects.push_back(std::unique_ptr<CGameObject>(new CCoin(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::P):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CPowerUp(CPos(i, j))));
-                break;
-            case (gamestate.gameMap.CMapObjects::T):
-                teleportPositions.push_back(CPos(i, j));
+                gameObjects.push_back(std::unique_ptr<CGameObject>(new CPowerUp(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::S):
                 gamestate.playerPos = CPos(j, i);
                 break;
             case (gamestate.gameMap.CMapObjects::m):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CMax(CPos(i, j))));
+                gameObjects.push_back(std::unique_ptr<CGameObject>(new CMax(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::t):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CManhattan(CPos(i, j))));
+                gameObjects.push_back(std::unique_ptr<CGameObject>(new CManhattan(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::e):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CEuclid(CPos(i, j))));
+                gameObjects.push_back(std::unique_ptr<CGameObject>(new CEuclid(CPos(j, i))));
                 break;
             }
-
-    gameObjects.push_back(std::unique_ptr<CGameObject>(new CPortal(teleportPositions[0], teleportPositions[1])));
-    gameObjects.push_back(std::unique_ptr<CGameObject>(new CPortal(teleportPositions[1], teleportPositions[0])));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +121,8 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     if (gamestate.isNextMoveLegal())
         gamestate.updateMoves();
 
+    for (auto const &gameObject : gameObjects)
+        gameObject->update(gamestate);
     // TODO - update gameobjects
 }
 

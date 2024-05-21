@@ -14,7 +14,6 @@ struct CGameMap
         W, // wall
         C, // coin
         P, // powerup
-        T, // teleport
         S, // player start pos
         m, // Max start pos
         t, // manhaTtan start pos
@@ -36,7 +35,7 @@ struct CGameMap
         {W, W, W, W, W, W, C, W, W, O, O, O, O, O, O, O, O, O, O, W, W, C, W, W, W, W, W, W},
         {W, W, W, W, W, W, C, W, W, O, W, W, W, O, O, W, W, W, O, W, W, C, W, W, W, W, W, W},
         {W, W, W, W, W, W, C, W, W, O, W, O, O, O, O, O, O, W, O, W, W, C, W, W, W, W, W, W},
-        {T, O, O, O, O, O, C, O, O, O, W, O, m, t, e, O, O, W, O, O, O, C, O, O, O, O, O, T},
+        {O, O, O, O, O, O, C, O, O, O, W, O, m, t, e, O, O, W, O, O, O, C, O, O, O, O, O, O},
         {W, W, W, W, W, W, C, W, W, O, W, O, O, O, O, O, O, W, O, W, W, C, W, W, W, W, W, W},
         {W, W, W, W, W, W, C, W, W, O, W, W, W, W, W, W, W, W, O, W, W, C, W, W, W, W, W, W},
         {W, W, W, W, W, W, C, W, W, O, O, O, O, O, O, O, O, O, O, W, W, C, W, W, W, W, W, W},

@@ -44,5 +44,4 @@ struct CGameState
     bool isAMoveLegal(CGameState::CDirection move);
     void updateMoves();
     void updatePos(double deltaTime);
-    std::pair<int, int> getIntPos();
 };

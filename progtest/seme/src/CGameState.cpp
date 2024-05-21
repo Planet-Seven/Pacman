@@ -16,7 +16,7 @@ bool CGameState::isThisMoveLegal()
 
 bool CGameState::isAMoveLegal(CGameState::CDirection move)
 {
-    std::pair<int, int> intPlayerPos = getIntPos();
+    std::pair<int, int> intPlayerPos = playerPos.getIntPos();
 
     if (move == CDirection::left && playerPos.x - intPlayerPos.first < threshold)
         if ((intPlayerPos.first != 0 &&
@@ -27,7 +27,7 @@ bool CGameState::isAMoveLegal(CGameState::CDirection move)
             return false;
 
     if (move == CDirection::right)
-        if ((intPlayerPos.first != BOARDWIDTH &&
+        if ((intPlayerPos.first != BOARDWIDTH - 1 &&
              gameMap.map[intPlayerPos.second][intPlayerPos.first + 1] == gameMap.W) ||
 
             (playerPos.y - intPlayerPos.second > threshold))
@@ -43,7 +43,7 @@ bool CGameState::isAMoveLegal(CGameState::CDirection move)
             return false;
 
     if (move == CDirection::down)
-        if ((intPlayerPos.second != BOARDHEIGHT &&
+        if ((intPlayerPos.second != BOARDHEIGHT - 1 &&
              gameMap.map[intPlayerPos.second + 1][intPlayerPos.first] == gameMap.W) ||
 
             (playerPos.x - intPlayerPos.first > threshold))
@@ -72,9 +72,16 @@ void CGameState::updatePos(double deltaTime)
 
     if (thisMove == CGameState::CDirection::right)
         playerPos.x += PLAYER_SPEED * deltaTime;
-}
 
-std::pair<int, int> CGameState::getIntPos()
-{
-    return std::make_pair<int, int>(static_cast<int>(playerPos.x), static_cast<int>(playerPos.y));
+    if (playerPos.x < -1)
+        playerPos.x += BOARDWIDTH;
+
+    if (playerPos.y < -1)
+        playerPos.x += BOARDHEIGHT;
+
+    if (playerPos.x > BOARDWIDTH)
+        playerPos.x -= BOARDWIDTH;
+
+    if (playerPos.y > BOARDHEIGHT)
+        playerPos.x -= BOARDHEIGHT;
 }
