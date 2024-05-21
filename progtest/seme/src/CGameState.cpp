@@ -16,35 +16,37 @@ bool CGameState::isThisMoveLegal()
 
 bool CGameState::isAMoveLegal(CGameState::CDirection move)
 {
-    if (move == CDirection::left && playerPos.x - floor(playerPos.x) < threshold)
-        if ((static_cast<int>(playerPos.x) != 0 &&
-             gameMap.map[static_cast<int>(playerPos.y)][static_cast<int>(playerPos.x) - 1] == gameMap.W) ||
+    std::pair<int, int> intPlayerPos = getIntPos();
 
-            (playerPos.y - floor(playerPos.y) > threshold))
+    if (move == CDirection::left && playerPos.x - intPlayerPos.first < threshold)
+        if ((intPlayerPos.first != 0 &&
+             gameMap.map[intPlayerPos.second][intPlayerPos.first - 1] == gameMap.W) ||
+
+            (playerPos.y - intPlayerPos.second > threshold))
 
             return false;
 
     if (move == CDirection::right)
-        if ((static_cast<int>(playerPos.x) != BOARDWIDTH &&
-             gameMap.map[static_cast<int>(playerPos.y)][static_cast<int>(playerPos.x) + 1] == gameMap.W) ||
+        if ((intPlayerPos.first != BOARDWIDTH &&
+             gameMap.map[intPlayerPos.second][intPlayerPos.first + 1] == gameMap.W) ||
 
-            (playerPos.y - floor(playerPos.y) > threshold))
+            (playerPos.y - intPlayerPos.second > threshold))
 
             return false;
 
-    if (move == CDirection::up && playerPos.y - floor(playerPos.y) < threshold)
+    if (move == CDirection::up && playerPos.y - intPlayerPos.second < threshold)
         if ((static_cast<int>(playerPos.y) != 0 &&
-             gameMap.map[static_cast<int>(playerPos.y) - 1][static_cast<int>(playerPos.x)] == gameMap.W) ||
+             gameMap.map[intPlayerPos.second - 1][intPlayerPos.first] == gameMap.W) ||
 
-            (playerPos.x - floor(playerPos.x) > threshold))
+            (playerPos.x - intPlayerPos.first > threshold))
 
             return false;
 
     if (move == CDirection::down)
-        if ((static_cast<int>(playerPos.y) != BOARDHEIGHT &&
-             gameMap.map[static_cast<int>(playerPos.y) + 1][static_cast<int>(playerPos.x)] == gameMap.W) ||
+        if ((intPlayerPos.second != BOARDHEIGHT &&
+             gameMap.map[intPlayerPos.second + 1][intPlayerPos.first] == gameMap.W) ||
 
-            (playerPos.x - floor(playerPos.x) > threshold))
+            (playerPos.x - intPlayerPos.first > threshold))
 
             return false;
 
@@ -70,4 +72,9 @@ void CGameState::updatePos(double deltaTime)
 
     if (thisMove == CGameState::CDirection::right)
         playerPos.x += PLAYER_SPEED * deltaTime;
+}
+
+std::pair<int, int> CGameState::getIntPos()
+{
+    return std::make_pair<int, int>(static_cast<int>(playerPos.x), static_cast<int>(playerPos.y));
 }

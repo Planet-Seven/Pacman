@@ -3,6 +3,8 @@
 #include "CPos.h"
 #include "CGameMap.h"
 
+#include "utility"
+
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
 */
@@ -42,4 +44,5 @@ struct CGameState
     bool isAMoveLegal(CGameState::CDirection move);
     void updateMoves();
     void updatePos(double deltaTime);
+    std::pair<int, int> getIntPos();
 };
