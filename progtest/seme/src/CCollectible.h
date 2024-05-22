@@ -9,7 +9,7 @@ class CCollectible : public CGameObject
 public:
     CCollectible(CPos pos) : pos(pos){};
     virtual void doEffect(CGameState &gamestate) = 0;
-    virtual void update(CGameState &gamestate) override;
+    virtual void update(CGameState &gamestate, double deltaTime) override;
 
 protected:
     CPos pos;
@@ -24,7 +24,7 @@ class CCoin : public CCollectible
 public:
     CCoin(CPos pos) : CCollectible(pos){};
     virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw(SDL_Renderer *renderer) override;
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
 };
 
 /** \class CPowerUp
@@ -35,5 +35,5 @@ class CPowerUp : public CCollectible
 public:
     CPowerUp(CPos pos) : CCollectible(pos){};
     virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw(SDL_Renderer *renderer) override;
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
 };

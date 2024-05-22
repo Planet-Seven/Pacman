@@ -10,8 +10,8 @@ class CGameObject
 {
 public:
     virtual ~CGameObject() = default;
-    virtual void update(CGameState &gamestate) = 0;
-    virtual void draw(SDL_Renderer *renderer) = 0;
+    virtual void update(CGameState &gamestate, double deltaTime) = 0;
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) = 0;
 
 private:
 };

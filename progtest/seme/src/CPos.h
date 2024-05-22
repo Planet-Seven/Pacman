@@ -14,4 +14,5 @@ struct CPos
 
     std::pair<int, int> getIntPos() const;
     bool operator==(const CPos &rhs) const;
+    CPos operator-(const CPos &rhs);
 };

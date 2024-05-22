@@ -11,3 +11,8 @@ bool CPos::operator==(const CPos &rhs) const
 {
     return (round(rhs.x) == round(x) && round(rhs.y) == round(y));
 }
+
+CPos CPos::operator-(const CPos &rhs)
+{
+    return CPos(x - rhs.x, y - rhs.y);
+}

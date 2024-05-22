@@ -65,10 +65,10 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
             {
             case (gamestate.gameMap.CMapObjects::C):
                 coinCount++;
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CCoin(CPos(j, i))));
+                gameObjects.insert(gameObjects.begin(), std::unique_ptr<CGameObject>(new CCoin(CPos(j, i)))); // we insert to front because we want the ghosts to be rendered on top
                 break;
             case (gamestate.gameMap.CMapObjects::P):
-                gameObjects.push_back(std::unique_ptr<CGameObject>(new CPowerUp(CPos(j, i))));
+                gameObjects.insert(gameObjects.begin(), std::unique_ptr<CGameObject>(new CPowerUp(CPos(j, i))));
                 break;
             case (gamestate.gameMap.CMapObjects::S):
                 gamestate.playerPos = CPos(j, i);
@@ -107,13 +107,13 @@ void processInput(CGameState &gamestate, bool &playing)
         if (event.key.keysym.sym == SDLK_ESCAPE)
             playing = false;
         if (event.key.keysym.sym == SDLK_UP)
-            gamestate.nextMove = CGameState::CDirection::up;
+            gamestate.nextMove = CDirection::up;
         if (event.key.keysym.sym == SDLK_DOWN)
-            gamestate.nextMove = CGameState::CDirection::down;
+            gamestate.nextMove = CDirection::down;
         if (event.key.keysym.sym == SDLK_LEFT)
-            gamestate.nextMove = CGameState::CDirection::left;
+            gamestate.nextMove = CDirection::left;
         if (event.key.keysym.sym == SDLK_RIGHT)
-            gamestate.nextMove = CGameState::CDirection::right;
+            gamestate.nextMove = CDirection::right;
         if (event.key.keysym.sym == SDLK_p)
             std::cout << gamestate.gameMap.coinCount << std::endl;
         break;
@@ -143,8 +143,16 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     if (gamestate.isNextMoveLegal())
         gamestate.updateMoves();
 
+    if (gamestate.powerUpRemaining > 0)
+    {
+        gamestate.powerUpRemaining -= deltaTime;
+
+        if (gamestate.powerUpRemaining <= 0)
+            gamestate.gamemode = CGameState::CGameMode::chase;
+    }
+
     for (auto const &gameObject : gameObjects)
-        gameObject->update(gamestate);
+        gameObject->update(gamestate, deltaTime);
     // TODO - update gameobjects
 }
 
@@ -197,7 +205,7 @@ void drawPlayer(CGameState &gamestate, SDL_Renderer *renderer)
 void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer)
 {
     for (auto const &gameObject : gameObjects)
-        gameObject->draw(renderer);
+        gameObject->draw(renderer, gamestate);
 }
 
 void drawText(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, int y)

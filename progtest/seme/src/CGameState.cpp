@@ -6,47 +6,47 @@ constexpr double threshold = 0.005;
 // TODO - bound checking
 bool CGameState::isNextMoveLegal()
 {
-    return isAMoveLegal(nextMove);
+    return isAMoveLegal(nextMove, playerPos);
 }
 
 bool CGameState::isThisMoveLegal()
 {
-    return isAMoveLegal(thisMove);
+    return isAMoveLegal(thisMove, playerPos);
 }
 
-bool CGameState::isAMoveLegal(CGameState::CDirection move)
+bool CGameState::isAMoveLegal(CDirection move, CPos pos)
 {
-    std::pair<int, int> intPlayerPos = playerPos.getIntPos();
+    std::pair<int, int> intPos = pos.getIntPos();
 
-    if (move == CDirection::left && playerPos.x - intPlayerPos.first < threshold)
-        if ((intPlayerPos.first != 0 &&
-             gameMap.map[intPlayerPos.second][intPlayerPos.first - 1] == gameMap.W) ||
+    if (move == CDirection::left && pos.x - intPos.first < threshold)
+        if ((intPos.first != 0 &&
+             gameMap.map[intPos.second][intPos.first - 1] == gameMap.W) ||
 
-            (playerPos.y - intPlayerPos.second > threshold))
+            (pos.y - intPos.second > threshold))
 
             return false;
 
     if (move == CDirection::right)
-        if ((intPlayerPos.first != BOARDWIDTH - 1 &&
-             gameMap.map[intPlayerPos.second][intPlayerPos.first + 1] == gameMap.W) ||
+        if ((intPos.first != BOARDWIDTH - 1 &&
+             gameMap.map[intPos.second][intPos.first + 1] == gameMap.W) ||
 
-            (playerPos.y - intPlayerPos.second > threshold))
+            (pos.y - intPos.second > threshold))
 
             return false;
 
-    if (move == CDirection::up && playerPos.y - intPlayerPos.second < threshold)
+    if (move == CDirection::up && pos.y - intPos.second < threshold)
         if ((static_cast<int>(playerPos.y) != 0 &&
-             gameMap.map[intPlayerPos.second - 1][intPlayerPos.first] == gameMap.W) ||
+             gameMap.map[intPos.second - 1][intPos.first] == gameMap.W) ||
 
-            (playerPos.x - intPlayerPos.first > threshold))
+            (pos.x - intPos.first > threshold))
 
             return false;
 
     if (move == CDirection::down)
-        if ((intPlayerPos.second != BOARDHEIGHT - 1 &&
-             gameMap.map[intPlayerPos.second + 1][intPlayerPos.first] == gameMap.W) ||
+        if ((intPos.second != BOARDHEIGHT - 1 &&
+             gameMap.map[intPos.second + 1][intPos.first] == gameMap.W) ||
 
-            (playerPos.x - intPlayerPos.first > threshold))
+            (pos.x - intPos.first > threshold))
 
             return false;
 
@@ -61,16 +61,16 @@ void CGameState::updateMoves()
 void CGameState::updatePos(double deltaTime)
 {
 
-    if (thisMove == CGameState::CDirection::up)
+    if (thisMove == CDirection::up)
         playerPos.y -= PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CGameState::CDirection::down)
+    if (thisMove == CDirection::down)
         playerPos.y += PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CGameState::CDirection::left)
+    if (thisMove == CDirection::left)
         playerPos.x -= PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CGameState::CDirection::right)
+    if (thisMove == CDirection::right)
         playerPos.x += PLAYER_SPEED * deltaTime;
 
     if (playerPos.x < -1)

@@ -1,6 +1,6 @@
 #include "CCollectible.h"
 
-void CCollectible::update(CGameState &gamestate)
+void CCollectible::update(CGameState &gamestate, double deltaTime)
 {
     if (gamestate.playerPos == pos)
     {
@@ -17,7 +17,7 @@ void CCoin::doEffect(CGameState &gamestate)
         gamestate.score += 1;
     }
 }
-void CCoin::draw(SDL_Renderer *renderer)
+void CCoin::draw(SDL_Renderer *renderer, CGameState &gamestate)
 {
     if (!collected)
     {
@@ -37,8 +37,10 @@ void CCoin::draw(SDL_Renderer *renderer)
 
 void CPowerUp::doEffect(CGameState &gamestate)
 {
+    gamestate.gamemode = CGameState::CGameMode::powerup;
+    gamestate.powerUpRemaining = gamestate.powerUpTime;
 }
-void CPowerUp::draw(SDL_Renderer *renderer)
+void CPowerUp::draw(SDL_Renderer *renderer, CGameState &gamestate)
 {
     if (!collected)
     {
