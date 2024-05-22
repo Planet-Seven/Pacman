@@ -37,8 +37,11 @@ void CCoin::draw(SDL_Renderer *renderer, CGameState &gamestate)
 
 void CPowerUp::doEffect(CGameState &gamestate)
 {
-    gamestate.gamemode = CGameState::CGameMode::powerup;
-    gamestate.powerUpRemaining = gamestate.powerUpTime;
+    if (!collected)
+    {
+        gamestate.gamemode = CGameState::CGameMode::powerup;
+        gamestate.powerUpRemaining = gamestate.powerUpTime;
+    }
 }
 void CPowerUp::draw(SDL_Renderer *renderer, CGameState &gamestate)
 {

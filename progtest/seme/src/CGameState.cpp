@@ -19,7 +19,7 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
     std::pair<int, int> intPos = pos.getIntPos();
 
     if (move == CDirection::left && pos.x - intPos.first < threshold)
-        if ((intPos.first != 0 &&
+        if ((intPos.first > 0 &&
              gameMap.map[intPos.second][intPos.first - 1] == gameMap.W) ||
 
             (pos.y - intPos.second > threshold))
@@ -27,7 +27,7 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
             return false;
 
     if (move == CDirection::right)
-        if ((intPos.first != BOARDWIDTH - 1 &&
+        if ((intPos.first < BOARDWIDTH - 1 &&
              gameMap.map[intPos.second][intPos.first + 1] == gameMap.W) ||
 
             (pos.y - intPos.second > threshold))
@@ -35,7 +35,7 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
             return false;
 
     if (move == CDirection::up && pos.y - intPos.second < threshold)
-        if ((static_cast<int>(playerPos.y) != 0 &&
+        if ((intPos.second > 0 &&
              gameMap.map[intPos.second - 1][intPos.first] == gameMap.W) ||
 
             (pos.x - intPos.first > threshold))
@@ -43,7 +43,7 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
             return false;
 
     if (move == CDirection::down)
-        if ((intPos.second != BOARDHEIGHT - 1 &&
+        if ((intPos.second < BOARDHEIGHT - 1 &&
              gameMap.map[intPos.second + 1][intPos.first] == gameMap.W) ||
 
             (pos.x - intPos.first > threshold))

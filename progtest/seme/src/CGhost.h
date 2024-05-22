@@ -8,7 +8,7 @@ An abstract class that serves as the parent class of individual ghost personalit
 class CGhost : public CGameObject
 {
 public:
-    CGhost(CPos pos) : currentPos(pos), nextPos(pos){};
+    CGhost(CPos pos) : startPos(pos), currentPos(pos), nextPos(pos){};
 
     virtual void update(CGameState &gamestate, double deltaTime) override;
 
@@ -23,6 +23,7 @@ public:
     void drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int G, int B);
 
 protected:
+    const CPos startPos;
     CPos currentPos; ///< the position the ghost right now
     CPos nextPos;    ///< the position the ghost will take next
     CPos targetPos;  ///< the position of the target, usually the player's position

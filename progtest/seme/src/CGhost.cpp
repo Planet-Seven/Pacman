@@ -10,30 +10,35 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
 
     targetPos = gamestate.playerPos;
 
+    if (currentPos == gamestate.playerPos)
+    {
+        if (gamestate.gamemode == CGameState::CGameMode::powerup)
+        {
+            gamestate.score += 400;
+            currentPos = startPos;
+        }
+        else
+            gamestate.screen = CGameState::CScreen::gameOver;
+    }
+
     getNextPos(gamestate);
 
     if (direction == CDirection::up)
         currentPos.y -= speed * deltaTime;
-
-    if (direction == CDirection::down)
+    else if (direction == CDirection::down)
         currentPos.y += speed * deltaTime;
-
-    if (direction == CDirection::left)
+    else if (direction == CDirection::left)
         currentPos.x -= speed * deltaTime;
-
-    if (direction == CDirection::right)
+    else if (direction == CDirection::right)
         currentPos.x += speed * deltaTime;
 
     if (currentPos.x < -1)
         currentPos.x += BOARDWIDTH;
-
-    if (currentPos.y < -1)
+    else if (currentPos.y < -1)
         currentPos.x += BOARDHEIGHT;
-
-    if (currentPos.x > BOARDWIDTH)
+    else if (currentPos.x > BOARDWIDTH)
         currentPos.x -= BOARDWIDTH;
-
-    if (currentPos.y > BOARDHEIGHT)
+    else if (currentPos.y > BOARDHEIGHT)
         currentPos.x -= BOARDHEIGHT;
 }
 

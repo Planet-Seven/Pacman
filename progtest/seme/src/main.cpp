@@ -26,6 +26,7 @@ void initializeWindow(SDL_Renderer *&renderer, SDL_Window *&window)
         SDL_WINDOW_BORDERLESS);
 
     renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +86,8 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
             }
 
     gamestate.gameMap.coinCount = coinCount;
+    gamestate.nextMove = CDirection::none;
+    gamestate.thisMove = CDirection::none;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +95,7 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
 /// @param[in] playing a boolean that maintains the game cycle.
 ///
 /// Handles user input. Checks for escape and arrow keys.
-void processInput(CGameState &gamestate, bool &playing)
+void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing)
 {
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -104,18 +107,44 @@ void processInput(CGameState &gamestate, bool &playing)
         break;
 
     case (SDL_KEYDOWN):
-        if (event.key.keysym.sym == SDLK_ESCAPE)
+        if (gamestate.screen == CGameState::CScreen::start)
+            gamestate.screen = CGameState::CScreen::playing;
+
+        if (gamestate.screen == CGameState::CScreen::playing) // not including this in an else block allows the first arrow key press to be registered
+        {
+            if (event.key.keysym.sym == SDLK_UP)
+                gamestate.nextMove = CDirection::up;
+            if (event.key.keysym.sym == SDLK_DOWN)
+                gamestate.nextMove = CDirection::down;
+            if (event.key.keysym.sym == SDLK_LEFT)
+                gamestate.nextMove = CDirection::left;
+            if (event.key.keysym.sym == SDLK_RIGHT)
+                gamestate.nextMove = CDirection::right;
+        }
+        else if (gamestate.screen == CGameState::CScreen::gameOver)
+        {
+            if (event.key.keysym.sym == SDLK_SPACE)
+            {
+                gameObjects.clear();
+                gamestate.score = 0;
+                gamestate.level = 1;
+                setup(gamestate, gameObjects);
+                gamestate.screen = CGameState::CScreen::playing;
+            }
+            if (event.key.keysym.sym == SDLK_h)
+            {
+                gamestate.screen = CGameState::CScreen::scoreBoard;
+            }
+        }
+        else if (gamestate.screen == CGameState::CScreen::scoreBoard)
+        {
+            if (event.key.keysym.sym == SDLK_h)
+                gamestate.screen = CGameState::CScreen::gameOver;
+        }
+
+        if (event.key.keysym.sym == SDLK_ESCAPE) // break the game cycle
             playing = false;
-        if (event.key.keysym.sym == SDLK_UP)
-            gamestate.nextMove = CDirection::up;
-        if (event.key.keysym.sym == SDLK_DOWN)
-            gamestate.nextMove = CDirection::down;
-        if (event.key.keysym.sym == SDLK_LEFT)
-            gamestate.nextMove = CDirection::left;
-        if (event.key.keysym.sym == SDLK_RIGHT)
-            gamestate.nextMove = CDirection::right;
-        if (event.key.keysym.sym == SDLK_p)
-            std::cout << gamestate.gameMap.coinCount << std::endl;
+
         break;
     }
 }
@@ -131,29 +160,32 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     if (gamestate.gameMap.coinCount == 0)
     {
         gamestate.level++;
+        gameObjects.clear();
         setup(gamestate, gameObjects);
     }
 
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
 
-    if (gamestate.isThisMoveLegal())
-        gamestate.updatePos(deltaTime);
-
-    if (gamestate.isNextMoveLegal())
-        gamestate.updateMoves();
-
-    if (gamestate.powerUpRemaining > 0)
+    if (gamestate.screen == CGameState::CScreen::playing)
     {
-        gamestate.powerUpRemaining -= deltaTime;
+        if (gamestate.isThisMoveLegal())
+            gamestate.updatePos(deltaTime);
 
-        if (gamestate.powerUpRemaining <= 0)
-            gamestate.gamemode = CGameState::CGameMode::chase;
+        if (gamestate.isNextMoveLegal())
+            gamestate.updateMoves();
+
+        if (gamestate.powerUpRemaining > 0)
+        {
+            gamestate.powerUpRemaining -= deltaTime;
+
+            if (gamestate.powerUpRemaining <= 0)
+                gamestate.gamemode = CGameState::CGameMode::chase;
+        }
+
+        for (auto const &gameObject : gameObjects)
+            gameObject->update(gamestate, deltaTime);
     }
-
-    for (auto const &gameObject : gameObjects)
-        gameObject->update(gamestate, deltaTime);
-    // TODO - update gameobjects
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -208,7 +240,7 @@ void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObj
         gameObject->draw(renderer, gamestate);
 }
 
-void drawText(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, int y)
+void drawText(SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, int y)
 {
     SDL_Color textColor = {255, 255, 255};
     int textWidth = 0;
@@ -235,22 +267,94 @@ void drawText(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font, std
     SDL_DestroyTexture(fontTexture);
 }
 
+void drawStartOverlay(SDL_Renderer *renderer, TTF_Font *font)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
+
+    SDL_Rect background = {
+        0,
+        0,
+        WINDOW_HEIGHT,
+        WINDOW_WIDTH + BOTTOM_PADDING};
+
+    SDL_RenderFillRect(renderer, &background);
+
+    std::string text = "PRESS ANY KEY TO START.";
+    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+}
+
+void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
+
+    SDL_Rect background = {
+        0,
+        0,
+        WINDOW_HEIGHT,
+        WINDOW_WIDTH + BOTTOM_PADDING};
+
+    SDL_RenderFillRect(renderer, &background);
+
+    std::string text = "GAME OVER.";
+    std::string text2 = "SCORE " + std::to_string(gamestate.score);
+
+    std::string text3 = "ESC                                     QUIT";
+    std::string text4 = "SPACE          PLAY AGAIN";
+    std::string text5 = "H      VIEW HIGH SCORES";
+
+    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 300);
+    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 200);
+
+    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    drawText(renderer, font, text4, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 100);
+    drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
+}
+
+void drawScoreBoardOverlay(SDL_Renderer *renderer, TTF_Font *font)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
+
+    SDL_Rect background = {
+        0,
+        0,
+        WINDOW_HEIGHT,
+        WINDOW_WIDTH + BOTTOM_PADDING};
+
+    SDL_RenderFillRect(renderer, &background);
+
+    std::string text = "HIGH SCORES";
+    std::string text2 = "ESC                                     QUIT";
+    std::string text3 = "H                                          BACK";
+
+    // TODO
+    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 300);
+    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
+    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 300);
+}
+
 void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     std::string scoreText = "SCORE " + std::to_string(gamestate.score);
     std::string levelText = "LEVEL " + std::to_string(gamestate.level);
-    drawText(gamestate,
-             renderer,
+    drawText(renderer,
              font,
              scoreText,
              WINDOW_WIDTH * 0.33,
              WINDOW_HEIGHT + BOTTOM_PADDING / 2);
-    drawText(gamestate,
-             renderer,
+    drawText(renderer,
              font,
              levelText,
              WINDOW_WIDTH * 0.66,
              WINDOW_HEIGHT + BOTTOM_PADDING / 2);
+
+    if (gamestate.screen == CGameState::CScreen::start)
+        drawStartOverlay(renderer, font);
+
+    else if (gamestate.screen == CGameState::CScreen::gameOver)
+        drawGameOverOverlay(gamestate, renderer, font);
+
+    else if (gamestate.screen == CGameState::CScreen::scoreBoard)
+        drawScoreBoardOverlay(renderer, font);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +392,7 @@ int main()
     int lastFrameTime = 0;
     while (playing)
     {
-        processInput(gamestate, playing);
+        processInput(gamestate, gameObjects, playing);
         update(gamestate, gameObjects, lastFrameTime);
         draw(gamestate, gameObjects, renderer, font);
     }
