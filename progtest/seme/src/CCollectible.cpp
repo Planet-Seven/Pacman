@@ -27,10 +27,12 @@ void CCoin::draw(SDL_Renderer *renderer, CGameState &gamestate)
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
 
         SDL_Rect coin =
-            {static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * pos.x + static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * offset)),
-             static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * pos.y + static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * offset)),
-             static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * coinScale),
-             static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * coinScale)};
+            {static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * pos.x +
+                              static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * offset)),
+             static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * pos.y +
+                              static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * offset)),
+             static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * coinScale),
+             static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * coinScale)};
         SDL_RenderFillRect(renderer, &coin);
     }
 }
@@ -53,10 +55,12 @@ void CPowerUp::draw(SDL_Renderer *renderer, CGameState &gamestate)
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
 
         SDL_Rect coin =
-            {static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * pos.x + static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * offset)),
-             static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * pos.y + static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * offset)),
-             static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * powerUpScale),
-             static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * powerUpScale)};
+            {static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * pos.x +                    // computing this on every re-render is not ideal, as it is always the same value
+                              static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * offset)), // ideally, the compiler should know to replace it at compile time (which it maybe does with -O),
+             static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * pos.y +                  // passing it as an argument or having it as an attribute is not very elegant.
+                              static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * offset)), // It should be revisited later and benchmarked.
+             static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * powerUpScale),
+             static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * powerUpScale)};
         SDL_RenderFillRect(renderer, &coin);
     }
 }

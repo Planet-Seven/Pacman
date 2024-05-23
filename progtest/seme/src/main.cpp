@@ -10,7 +10,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 /// initializes a SDL window
-void initializeWindow(SDL_Renderer *&renderer, SDL_Window *&window)
+void initializeWindow(CGameState &gamestate, SDL_Renderer *&renderer, SDL_Window *&window)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         std::cout << "Error initializing SDL." << std::endl;
@@ -22,8 +22,8 @@ void initializeWindow(SDL_Renderer *&renderer, SDL_Window *&window)
         NULL,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT + BOTTOM_PADDING,
+        gamestate.WINDOW_WIDTH,
+        gamestate.WINDOW_HEIGHT + gamestate.BOTTOM_PADDING,
         SDL_WINDOW_BORDERLESS);
 
     renderer = SDL_CreateRenderer(window, -1, 0);
@@ -39,10 +39,10 @@ void destroyWindow(SDL_Renderer *renderer, SDL_Window *window)
     SDL_Quit();
 }
 
-void openFont(TTF_Font *&font)
+void openFont(CGameState &gamestate, TTF_Font *&font)
 {
     std::string fontPath = "assets/fonts/Pixelmania.ttf";
-    font = TTF_OpenFont(fontPath.c_str(), FONT_SIZE);
+    font = TTF_OpenFont(fontPath.c_str(), gamestate.FONT_SIZE);
 }
 
 void loadHighScores(CGameState &gamestate)
@@ -84,8 +84,8 @@ void closeFont(TTF_Font *font)
 
 void loadGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &coinCount)
 {
-    for (int i = 0; i < BOARDHEIGHT; i++)
-        for (int j = 0; j < BOARDWIDTH; j++)
+    for (int i = 0; i < gamestate.gameMap.BOARDHEIGHT; i++)
+        for (int j = 0; j < gamestate.gameMap.BOARDWIDTH; j++)
 
             switch (gamestate.gameMap.map[i][j])
             {
@@ -125,7 +125,7 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
     gamestate.gameMap.coinCount = coinCount;
     gamestate.nextMove = CDirection::none;
     gamestate.thisMove = CDirection::none;
-    gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
+    gamestate.nextGuard = gamestate.TIME_BETWEEN_GUARD_MODE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,10 +215,10 @@ void increaseLevel(CGameState &gamestate, std::vector<std::unique_ptr<CGameObjec
     gamestate.level++;
 
     if (gamestate.guardTime > 1)
-        gamestate.guardTime -= GUARD_TIME_DECREMENT;
+        gamestate.guardTime -= gamestate.GUARD_TIME_DECREMENT;
 
     if (gamestate.powerUpTime > 1)
-        gamestate.powerUpTime -= POWER_UP_TIME_DECREMENT;
+        gamestate.powerUpTime -= gamestate.POWER_UP_TIME_DECREMENT;
 
     gameObjects.clear();
     setup(gamestate, gameObjects);
@@ -249,7 +249,7 @@ void updateGuard(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>
     {
         gamestate.gamemode = CGameState::CGameMode::guard;
         gamestate.guardTimeRemaining = gamestate.guardTime;
-        gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
+        gamestate.nextGuard = gamestate.TIME_BETWEEN_GUARD_MODE;
     }
 }
 
@@ -300,15 +300,15 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 /// @param[in] y y cooridnate
 ///
 /// Draws a simple wall object.
-void drawWall(int x, int y, SDL_Renderer *renderer)
+void drawWall(int x, int y, SDL_Renderer *renderer, CGameState &gamestate)
 {
     SDL_SetRenderDrawColor(renderer, 20, 20, 50, 255);
 
     SDL_Rect wall =
-        {static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * x),
-         static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * y),
-         static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH)),
-         static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT))};
+        {static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * x),
+         static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * y),
+         static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH)),
+         static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT))};
     SDL_RenderFillRect(renderer, &wall);
 }
 
@@ -318,10 +318,10 @@ void drawWall(int x, int y, SDL_Renderer *renderer)
 /// Draws the playing board.
 void drawMap(CGameState &gamestate, SDL_Renderer *renderer)
 {
-    for (int i = 0; i < BOARDHEIGHT; i++)
-        for (int j = 0; j < BOARDWIDTH; j++)
+    for (int i = 0; i < gamestate.gameMap.BOARDHEIGHT; i++)
+        for (int j = 0; j < gamestate.gameMap.BOARDWIDTH; j++)
             if (gamestate.gameMap.map[i][j] == gamestate.gameMap.CMapObjects::W)
-                drawWall(j, i, renderer);
+                drawWall(j, i, renderer, gamestate);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -334,10 +334,10 @@ void drawPlayer(CGameState &gamestate, SDL_Renderer *renderer)
 
     SDL_Rect player =
         {
-            static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * gamestate.playerPos.x),
-            static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * gamestate.playerPos.y),
-            static_cast<int>(WINDOW_WIDTH / (static_cast<double>(BOARDWIDTH))),
-            static_cast<int>(WINDOW_HEIGHT / (static_cast<double>(BOARDHEIGHT)))};
+            static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * gamestate.playerPos.x),
+            static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * gamestate.playerPos.y),
+            static_cast<int>(gamestate.WINDOW_WIDTH / (static_cast<double>(gamestate.gameMap.BOARDWIDTH))),
+            static_cast<int>(gamestate.WINDOW_HEIGHT / (static_cast<double>(gamestate.gameMap.BOARDHEIGHT)))};
     SDL_RenderFillRect(renderer, &player);
 }
 
@@ -374,20 +374,20 @@ void drawText(SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, 
     SDL_DestroyTexture(fontTexture);
 }
 
-void drawStartOverlay(SDL_Renderer *renderer, TTF_Font *font)
+void drawStartOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
 
     SDL_Rect background = {
         0,
         0,
-        WINDOW_HEIGHT,
-        WINDOW_WIDTH + BOTTOM_PADDING};
+        gamestate.WINDOW_HEIGHT,
+        gamestate.WINDOW_WIDTH + gamestate.BOTTOM_PADDING};
 
     SDL_RenderFillRect(renderer, &background);
 
     std::string text = "PRESS ANY KEY TO START.";
-    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    drawText(renderer, font, text, gamestate.WINDOW_WIDTH / 2, gamestate.WINDOW_HEIGHT / 2);
 }
 
 void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
@@ -397,8 +397,8 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
     SDL_Rect background = {
         0,
         0,
-        WINDOW_HEIGHT,
-        WINDOW_WIDTH + BOTTOM_PADDING};
+        gamestate.WINDOW_HEIGHT,
+        gamestate.WINDOW_WIDTH + gamestate.BOTTOM_PADDING};
 
     SDL_RenderFillRect(renderer, &background);
 
@@ -409,12 +409,31 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
     std::string text4 = "SPACE          PLAY AGAIN";
     std::string text5 = "H      VIEW HIGH SCORES";
 
-    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
-    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.2);
+    drawText(renderer,
+             font,
+             text,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3);
+    drawText(renderer,
+             font,
+             text2,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.2);
 
-    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    drawText(renderer, font, text4, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.1);
-    drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
+    drawText(renderer,
+             font, text3,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2);
+    drawText(renderer,
+             font,
+             text4,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.1);
+    drawText(renderer,
+             font,
+             text5,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.2);
 }
 
 void drawScores(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
@@ -427,7 +446,11 @@ void drawScores(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 
         std::string scoreText = std::to_string(position) + ". SCORE " + std::to_string(score.first) + "    LEVEL " + std::to_string(score.second);
         position++;
-        drawText(renderer, font, scoreText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3 + WINDOW_HEIGHT * (position * 0.1));
+        drawText(renderer,
+                 font,
+                 scoreText,
+                 gamestate.WINDOW_WIDTH / 2,
+                 gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3 + gamestate.WINDOW_HEIGHT * (position * 0.1));
     }
 }
 
@@ -438,8 +461,8 @@ void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Fo
     SDL_Rect background = {
         0,
         0,
-        WINDOW_HEIGHT,
-        WINDOW_WIDTH + BOTTOM_PADDING};
+        gamestate.WINDOW_HEIGHT,
+        gamestate.WINDOW_WIDTH + gamestate.BOTTOM_PADDING};
 
     SDL_RenderFillRect(renderer, &background);
 
@@ -449,9 +472,21 @@ void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Fo
     std::string text2 = "ESC                                     QUIT";
     std::string text3 = "H                                          BACK";
 
-    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
-    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.3);
-    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.4);
+    drawText(renderer,
+             font,
+             text,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3);
+    drawText(renderer,
+             font,
+             text2,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.3);
+    drawText(renderer,
+             font,
+             text3,
+             gamestate.WINDOW_WIDTH / 2,
+             gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.4);
 }
 
 void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
@@ -461,16 +496,16 @@ void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
     drawText(renderer,
              font,
              scoreText,
-             WINDOW_WIDTH * 0.33,
-             WINDOW_HEIGHT + BOTTOM_PADDING / 2);
+             gamestate.WINDOW_WIDTH * 0.33,
+             gamestate.WINDOW_HEIGHT + gamestate.BOTTOM_PADDING / 2);
     drawText(renderer,
              font,
              levelText,
-             WINDOW_WIDTH * 0.66,
-             WINDOW_HEIGHT + BOTTOM_PADDING / 2);
+             gamestate.WINDOW_WIDTH * 0.66,
+             gamestate.WINDOW_HEIGHT + gamestate.BOTTOM_PADDING / 2);
 
     if (gamestate.screen == CGameState::CScreen::start)
-        drawStartOverlay(renderer, font);
+        drawStartOverlay(gamestate, renderer, font);
 
     else if (gamestate.screen == CGameState::CScreen::gameOver)
         drawGameOverOverlay(gamestate, renderer, font);
@@ -506,8 +541,8 @@ int main()
 
     CGameState gamestate;
     std::vector<std::unique_ptr<CGameObject>> gameObjects;
-    initializeWindow(renderer, window);
-    openFont(font);
+    initializeWindow(gamestate, renderer, window);
+    openFont(gamestate, font);
     loadHighScores(gamestate);
     setup(gamestate, gameObjects);
 

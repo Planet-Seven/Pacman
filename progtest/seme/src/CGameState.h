@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../config.h"
-
 #include "CPos.h"
 #include "CGameMap.h"
 #include "CDirection.h"
@@ -12,11 +10,23 @@
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
 */
-constexpr int WINDOW_WIDTH = WINDOW_SCALE * 28; // choose a multiple of 28
-constexpr int WINDOW_HEIGHT = BOARDHEIGHT * (static_cast<double>(WINDOW_WIDTH) / BOARDWIDTH);
-
 struct CGameState
 {
+    // configuration constants loaded from a config file. If no config file is present, or the loading fails, the defaults are used.
+    int PLAYER_SPEED = 4;
+
+    int INITIAL_POWERUP_TIME = 5;
+    int POWER_UP_TIME_DECREMENT = 1;
+
+    int TIME_BETWEEN_GUARD_MODE = 30;
+    int INITIAL_GUARD_TIME = 10;
+    int GUARD_TIME_DECREMENT = 1;
+
+    int WINDOW_SCALE = 30;
+    int BOTTOM_PADDING = 100;
+    int FONT_SIZE = 20;
+    //------------------------------------------------------------------------------------------------------------------------------
+
     int level = 1;
     int score = 0;
     CPos playerPos;
@@ -50,10 +60,14 @@ struct CGameState
     CGameMode gamemode;                     ///< used to guide ghost behavior and enable eating interaction.
     CGameMap gameMap;                       ///< used to specify the postions of all game elements on game start
 
+    int WINDOW_WIDTH = WINDOW_SCALE * gameMap.BOARDWIDTH;
+    int WINDOW_HEIGHT = WINDOW_SCALE * gameMap.BOARDHEIGHT;
+
     bool isNextMoveLegal();
     bool isThisMoveLegal();
     bool isAMoveLegal(CDirection move, CPos pos);
     void updateMoves();
     void updatePos(double deltaTime);
     void saveScore();
+    void loadConfig();
 };

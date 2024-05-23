@@ -14,19 +14,19 @@ void CGhost::updatePos(CGameState &gamestate, double deltaTime, double speed)
         currentPos.x += speed * deltaTime;
 
     if (currentPos.x < -1)
-        currentPos.x += BOARDWIDTH;
+        currentPos.x += gamestate.gameMap.BOARDWIDTH;
     else if (currentPos.y < -1)
-        currentPos.y += BOARDHEIGHT;
-    else if (currentPos.x > BOARDWIDTH)
-        currentPos.x -= BOARDWIDTH;
-    else if (currentPos.y > BOARDHEIGHT)
-        currentPos.y -= BOARDHEIGHT;
+        currentPos.y += gamestate.gameMap.BOARDHEIGHT;
+    else if (currentPos.x > gamestate.gameMap.BOARDWIDTH)
+        currentPos.x -= gamestate.gameMap.BOARDWIDTH;
+    else if (currentPos.y > gamestate.gameMap.BOARDHEIGHT)
+        currentPos.y -= gamestate.gameMap.BOARDHEIGHT;
 }
 
 void CGhost::setTargetPos(CGameState &gamestate)
 {
     if (gamestate.gamemode == CGameState::CGameMode::guard)
-        targetPos = getGuardPos();
+        targetPos = getGuardPos(gamestate);
     else
         targetPos = gamestate.playerPos;
 }
@@ -47,7 +47,7 @@ void CGhost::handlePlayerCollision(CGameState &gamestate)
 
 void CGhost::update(CGameState &gamestate, double deltaTime)
 {
-    double speed = PLAYER_SPEED;
+    double speed = gamestate.PLAYER_SPEED;
     if (gamestate.gamemode == CGameState::CGameMode::powerup)
         speed *= 0.75;
 
@@ -122,10 +122,10 @@ void CGhost::drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int
 
     SDL_Rect manhattan =
         {
-            static_cast<int>(WINDOW_WIDTH / static_cast<double>(BOARDWIDTH) * currentPos.x),
-            static_cast<int>(WINDOW_HEIGHT / static_cast<double>(BOARDHEIGHT) * currentPos.y),
-            static_cast<int>(WINDOW_WIDTH / (static_cast<double>(BOARDWIDTH))),
-            static_cast<int>(WINDOW_HEIGHT / (static_cast<double>(BOARDHEIGHT)))};
+            static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * currentPos.x),
+            static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * currentPos.y),
+            static_cast<int>(gamestate.WINDOW_WIDTH / (static_cast<double>(gamestate.gameMap.BOARDWIDTH))),
+            static_cast<int>(gamestate.WINDOW_HEIGHT / (static_cast<double>(gamestate.gameMap.BOARDHEIGHT)))};
     SDL_RenderFillRect(renderer, &manhattan);
 }
 
@@ -139,9 +139,9 @@ void CManhattan::draw(SDL_Renderer *renderer, CGameState &gamestate)
     drawGhost(renderer, gamestate, 60, 150, 10);
 }
 
-CPos CManhattan::getGuardPos()
+CPos CManhattan::getGuardPos(CGameState &gamestate)
 {
-    return CPos(0, BOARDHEIGHT);
+    return CPos(0, gamestate.gameMap.BOARDHEIGHT);
 }
 
 double CEuclid::getNorm(CPos position)
@@ -154,7 +154,7 @@ void CEuclid::draw(SDL_Renderer *renderer, CGameState &gamestate)
     drawGhost(renderer, gamestate, 150, 0, 60);
 }
 
-CPos CEuclid::getGuardPos()
+CPos CEuclid::getGuardPos(CGameState &gamestate)
 {
     return CPos(0, 0);
 }
@@ -169,7 +169,7 @@ void CMax::draw(SDL_Renderer *renderer, CGameState &gamestate)
     drawGhost(renderer, gamestate, 150, 60, 10);
 }
 
-CPos CMax::getGuardPos()
+CPos CMax::getGuardPos(CGameState &gamestate)
 {
-    return CPos(BOARDHEIGHT, BOARDWIDTH);
+    return CPos(gamestate.gameMap.BOARDHEIGHT, gamestate.gameMap.BOARDWIDTH);
 }

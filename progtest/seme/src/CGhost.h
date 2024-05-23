@@ -22,7 +22,7 @@ public:
 
 protected:
     virtual double getNorm(CPos position) = 0;
-    virtual CPos getGuardPos() = 0;
+    virtual CPos getGuardPos(CGameState &gamestate) = 0;
     void findPossibleMoves(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
     void pickBestMove(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
     void handlePlayerCollision(CGameState &gamestate);
@@ -56,7 +56,7 @@ protected:
     /// Find the next position the ghost will take using the mahattan vector norm.
     virtual double getNorm(CPos position) override;
 
-    virtual CPos getGuardPos() override;
+    virtual CPos getGuardPos(CGameState &gamestate) override;
 };
 
 /** \class CEuclid
@@ -78,7 +78,7 @@ protected:
     ///
     /// Find the next position the ghost will take using euclidean vector norm.
     virtual double getNorm(CPos position) override;
-    virtual CPos getGuardPos() override;
+    virtual CPos getGuardPos(CGameState &gamestate) override;
 };
 
 /** \class CManhattan
@@ -101,5 +101,5 @@ protected:
     ///
     /// Find the next position the ghost will take using maximum vector norm.
     virtual double getNorm(CPos position) override;
-    virtual CPos getGuardPos() override;
+    virtual CPos getGuardPos(CGameState &gamestate) override;
 };

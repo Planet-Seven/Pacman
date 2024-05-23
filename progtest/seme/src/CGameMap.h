@@ -1,12 +1,16 @@
 #pragma once
-constexpr int BOARDHEIGHT = 31;
-constexpr int BOARDWIDTH = 28;
+constexpr int MAXWIDTH = 100;
 
 /** \class CGameMap
 A 2-d array and a set of constants to represent the game board.
 */
 struct CGameMap
 {
+    // configuration constants loaded from a config file. If no config file is present, or the loading fails, the defaults are used.
+    int BOARDHEIGHT = 31;
+    int BOARDWIDTH = 28;
+    //------------------------------------------------------------------------------------------------------------------------------
+
     int coinCount = 240;
 
     enum CMapObjects
@@ -20,7 +24,7 @@ struct CGameMap
         e, // Euclides start pos
         O  // empty
     };
-    short unsigned int map[BOARDHEIGHT][BOARDWIDTH] = {
+    short unsigned int map[MAXWIDTH][MAXWIDTH] = {
         {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W},
         {W, C, C, C, C, C, C, C, C, C, C, C, C, W, W, C, C, C, C, C, C, C, C, C, C, C, C, W},
         {W, C, W, W, W, W, C, W, W, W, W, W, C, W, W, C, W, W, W, W, W, C, W, W, W, W, C, W},
