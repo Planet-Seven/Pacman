@@ -40,8 +40,7 @@ struct CGameState
     {
         chase,
         guard,
-        powerup,
-        lightsout
+        powerup
     };
 
     std::vector<std::pair<int, int>> highscores;
