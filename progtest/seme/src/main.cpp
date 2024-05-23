@@ -302,12 +302,12 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
     std::string text4 = "SPACE          PLAY AGAIN";
     std::string text5 = "H      VIEW HIGH SCORES";
 
-    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 300);
-    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 200);
+    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
+    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.2);
 
     drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-    drawText(renderer, font, text4, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 100);
-    drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
+    drawText(renderer, font, text4, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.1);
+    drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
 }
 
 void drawScoreBoardOverlay(SDL_Renderer *renderer, TTF_Font *font)
@@ -327,9 +327,9 @@ void drawScoreBoardOverlay(SDL_Renderer *renderer, TTF_Font *font)
     std::string text3 = "H                                          BACK";
 
     // TODO
-    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 300);
-    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 200);
-    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 300);
+    drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
+    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
+    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.3);
 }
 
 void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
