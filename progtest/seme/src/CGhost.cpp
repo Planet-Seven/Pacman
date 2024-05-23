@@ -35,11 +35,11 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
     if (currentPos.x < -1)
         currentPos.x += BOARDWIDTH;
     else if (currentPos.y < -1)
-        currentPos.x += BOARDHEIGHT;
+        currentPos.y += BOARDHEIGHT;
     else if (currentPos.x > BOARDWIDTH)
         currentPos.x -= BOARDWIDTH;
     else if (currentPos.y > BOARDHEIGHT)
-        currentPos.x -= BOARDHEIGHT;
+        currentPos.y -= BOARDHEIGHT;
 }
 
 void CGhost::getNextPos(CGameState &gamestate)
@@ -48,16 +48,16 @@ void CGhost::getNextPos(CGameState &gamestate)
     std::pair<int, int> intPos = currentPos.getIntPos();
 
     if (gamestate.isAMoveLegal(CDirection::up, currentPos) && direction != CDirection::down)
-        possibleMoves.push_back({CPos(intPos.first - 1, intPos.second), CDirection::up});
+        possibleMoves.push_back({CPos(intPos.first, intPos.second - 1), CDirection::up});
 
     if (gamestate.isAMoveLegal(CDirection::down, currentPos) && direction != CDirection::up)
-        possibleMoves.push_back({CPos(intPos.first + 1, intPos.second), CDirection::down});
+        possibleMoves.push_back({CPos(intPos.first, intPos.second + 1), CDirection::down});
 
     if (gamestate.isAMoveLegal(CDirection::left, currentPos) && direction != CDirection::right)
-        possibleMoves.push_back({CPos(intPos.first, intPos.second - 1), CDirection::left});
+        possibleMoves.push_back({CPos(intPos.first - 1, intPos.second), CDirection::left});
 
     if (gamestate.isAMoveLegal(CDirection::right, currentPos) && direction != CDirection::left)
-        possibleMoves.push_back({CPos(intPos.first, intPos.second + 1), CDirection::right});
+        possibleMoves.push_back({CPos(intPos.first + 1, intPos.second), CDirection::right});
 
     if (!possibleMoves.empty())
     {
@@ -66,10 +66,11 @@ void CGhost::getNextPos(CGameState &gamestate)
     }
     else
         direction = CDirection::none;
+
     for (auto move : possibleMoves)
     {
         if (gamestate.gamemode == CGameState::CGameMode::chase &&
-            getNorm(nextPos - gamestate.playerPos) >= getNorm(move.first - gamestate.playerPos))
+            getNorm(nextPos - gamestate.playerPos) > getNorm(move.first - gamestate.playerPos))
         {
             direction = move.second;
             nextPos = move.first;

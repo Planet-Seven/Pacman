@@ -79,11 +79,11 @@ void CGameState::updatePos(double deltaTime)
         playerPos.x += BOARDWIDTH;
 
     if (playerPos.y < -1)
-        playerPos.x += BOARDHEIGHT;
+        playerPos.y += BOARDHEIGHT;
 
     if (playerPos.x > BOARDWIDTH)
         playerPos.x -= BOARDWIDTH;
 
     if (playerPos.y > BOARDHEIGHT)
-        playerPos.x -= BOARDHEIGHT;
+        playerPos.y -= BOARDHEIGHT;
 }
