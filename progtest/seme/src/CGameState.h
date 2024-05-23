@@ -6,6 +6,7 @@
 
 #include <utility>
 #include <vector>
+#include <fstream>
 
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
@@ -14,6 +15,7 @@ struct CGameState
 {
     // configuration constants loaded from a config file. If no config file is present, or the loading fails, the defaults are used.
     int PLAYER_SPEED = 4;
+    double POWER_UP_GHOST_SLOWDOWN = 0.75;
 
     int INITIAL_POWERUP_TIME = 5;
     int POWER_UP_TIME_DECREMENT = 1;
@@ -70,4 +72,18 @@ struct CGameState
     void updatePos(double deltaTime);
     void saveScore();
     void loadConfig();
+
+    void loadSpeed(std::ifstream &config);
+    void loadPowerUpGhostSlowdown(std::ifstream &config);
+    void loadInitialPowerUpTime(std::ifstream &config);
+    void loadPowerUpTimeDecrement(std::ifstream &config);
+    void loadTimeBetweenGuardMode(std::ifstream &config);
+    void loadInitialGuardTime(std::ifstream &config);
+    void loadGuardTimeDecrement(std::ifstream &config);
+    void loadWindowScale(std::ifstream &config);
+    void loadBottomPadding(std::ifstream &config);
+    void loadFontSize(std::ifstream &config);
+    void loadBoardWidth(std::ifstream &config);
+    void loadBoardHeight(std::ifstream &config);
+    void loadBoard(std::ifstream &config);
 };

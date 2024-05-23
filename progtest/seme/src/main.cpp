@@ -542,6 +542,7 @@ int main()
     TTF_Font *font = nullptr;
 
     CGameState gamestate;
+    gamestate.loadConfig();
     std::vector<std::unique_ptr<CGameObject>> gameObjects;
     initializeWindow(gamestate, renderer, window);
     openFont(gamestate, font);

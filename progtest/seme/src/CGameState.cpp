@@ -3,6 +3,160 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include <fstream>
+#include <iostream>
+
+void CGameState::loadSpeed(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "PLAYER_SPEED" || !(config >> PLAYER_SPEED))
+        throw std::invalid_argument("unable to read player speed");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadPowerUpGhostSlowdown(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "POWER_UP_GHOST_SLOWDOWN" || !(config >> POWER_UP_GHOST_SLOWDOWN))
+        throw std::invalid_argument("unable to read power up ghost slowdown");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadInitialPowerUpTime(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "INITIAL_POWERUP_TIME" || !(config >> INITIAL_POWERUP_TIME))
+        throw std::invalid_argument("unable to read initial powerup time");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadPowerUpTimeDecrement(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "POWER_UP_TIME_DECREMENT" || !(config >> POWER_UP_TIME_DECREMENT))
+        throw std::invalid_argument("unable to read power up time decrement");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadTimeBetweenGuardMode(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "TIME_BETWEEN_GUARD_MODE" || !(config >> TIME_BETWEEN_GUARD_MODE))
+        throw std::invalid_argument("unable to read time between guard mode");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadInitialGuardTime(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "INITIAL_GUARD_TIME" || !(config >> INITIAL_GUARD_TIME))
+        throw std::invalid_argument("unable to read initial guard time");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadGuardTimeDecrement(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "GUARD_TIME_DECREMENT" || !(config >> GUARD_TIME_DECREMENT))
+        throw std::invalid_argument("unable to read guard time decrement");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadWindowScale(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "WINDOW_SCALE" || !(config >> WINDOW_SCALE))
+        throw std::invalid_argument("unable to read window scale");
+
+    getline(config, valueName); // flush the rest of the line
+
+    WINDOW_WIDTH = WINDOW_SCALE * gameMap.BOARDWIDTH; // recalcuate window width and window height
+    WINDOW_HEIGHT = WINDOW_SCALE * gameMap.BOARDHEIGHT;
+}
+void CGameState::loadBottomPadding(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "BOTTOM_PADDING" || !(config >> BOTTOM_PADDING))
+        throw std::invalid_argument("unable to read bottom padding");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadFontSize(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "FONT_SIZE" || !(config >> FONT_SIZE))
+        throw std::invalid_argument("unable to read font size");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadBoardWidth(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "BOARD_WIDTH" || !(config >> gameMap.BOARDWIDTH))
+        throw std::invalid_argument("unable to read board width");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadBoardHeight(std::ifstream &config)
+{
+    std::string valueName;
+    getline(config, valueName, ':');
+    if (valueName != "BOARD_HEIGHT" || !(config >> gameMap.BOARDHEIGHT))
+        throw std::invalid_argument("unable to read board height");
+
+    getline(config, valueName); // flush the rest of the line
+}
+void CGameState::loadBoard(std::ifstream &config)
+{
+}
+
+void CGameState::loadConfig()
+{
+    std::ifstream config("settings.conf");
+    if (config.is_open())
+    {
+        try
+        {
+            loadSpeed(config);
+            loadPowerUpGhostSlowdown(config);
+
+            loadInitialPowerUpTime(config);
+            loadPowerUpTimeDecrement(config);
+
+            loadTimeBetweenGuardMode(config);
+            loadInitialGuardTime(config);
+            loadGuardTimeDecrement(config);
+
+            loadWindowScale(config);
+            loadBottomPadding(config);
+            loadFontSize(config);
+
+            loadBoardWidth(config);
+            loadBoardHeight(config);
+
+            loadBoard(config);
+        }
+        catch (std::invalid_argument &e)
+        {
+            std::cout << e.what() << " Please check the settings file." << std::endl;
+        }
+
+        config.close();
+    }
+    else
+        std::cout << "Error loading settings. Using default settings instead." << std::endl;
+}
 
 bool CGameState::isNextMoveLegal()
 {
