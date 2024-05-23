@@ -128,7 +128,6 @@ CGameMap::CMapObjects ASCIIToMapObject(char c)
         return CGameMap::CMapObjects::C;
     case 'S':
         return CGameMap::CMapObjects::S;
-        break;
     case 'm':
         return CGameMap::CMapObjects::m;
     case 't':
