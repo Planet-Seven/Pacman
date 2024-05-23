@@ -159,7 +159,7 @@ void CGameState::loadBoard(std::ifstream &config)
 
 void CGameState::loadConfig()
 {
-    std::ifstream config("settings.conf");
+    std::ifstream config("./src/settings.conf");
     if (config.is_open())
     {
         try
