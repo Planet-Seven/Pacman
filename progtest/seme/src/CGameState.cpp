@@ -1,7 +1,7 @@
 #include "CGameState.h"
 
 #include "cmath"
-constexpr double threshold = 0.005;
+constexpr double threshold = 0.05;
 
 // TODO - bound checking
 bool CGameState::isNextMoveLegal()
@@ -18,9 +18,10 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
 {
     std::pair<int, int> intPos = pos.getIntPos();
 
-    if (move == CDirection::left && pos.x - intPos.first < threshold)
+    if (move == CDirection::left)
         if ((intPos.first > 0 &&
-             gameMap.map[intPos.second][intPos.first - 1] == gameMap.W) ||
+             gameMap.map[intPos.second][intPos.first - 1] == gameMap.W &&
+             pos.x - intPos.first < threshold) ||
 
             (pos.y - intPos.second > threshold))
 
@@ -34,9 +35,10 @@ bool CGameState::isAMoveLegal(CDirection move, CPos pos)
 
             return false;
 
-    if (move == CDirection::up && pos.y - intPos.second < threshold)
+    if (move == CDirection::up)
         if ((intPos.second > 0 &&
-             gameMap.map[intPos.second - 1][intPos.first] == gameMap.W) ||
+             gameMap.map[intPos.second - 1][intPos.first] == gameMap.W &&
+             pos.y - intPos.second < threshold) ||
 
             (pos.x - intPos.first > threshold))
 
