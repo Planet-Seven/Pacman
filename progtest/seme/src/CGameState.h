@@ -6,7 +6,8 @@
 #include "CGameMap.h"
 #include "CDirection.h"
 
-#include "utility"
+#include <utility>
+#include <vector>
 
 /** \class CGameState
  A collection of variables and constants used as a context for other functions and methods.
@@ -38,6 +39,7 @@ struct CGameState
         lightsout
     };
 
+    std::vector<std::pair<int, int>> highscores;
     CScreen screen = CScreen::start;
     CDirection thisMove = CDirection::none; ///< player move that is currently being executed
     CDirection nextMove = CDirection::none; ///< player move that is next in line. It will either be cached or executed on the next update.
@@ -49,4 +51,5 @@ struct CGameState
     bool isAMoveLegal(CDirection move, CPos pos);
     void updateMoves();
     void updatePos(double deltaTime);
+    void saveScore();
 };

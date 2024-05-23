@@ -18,7 +18,10 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
             currentPos = startPos;
         }
         else
+        {
+            gamestate.saveScore();
             gamestate.screen = CGameState::CScreen::gameOver;
+        }
     }
 
     getNextPos(gamestate);

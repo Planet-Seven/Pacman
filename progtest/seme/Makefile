@@ -1,7 +1,7 @@
 all: build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o
 	mkdir -p build
 	g++ -Wall -pedantic -fsanitize=address -g build/main.o build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pac.out
-	pwd
+	touch build/highscores.txt
 	./pac.out
 
 build/main.o: build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o

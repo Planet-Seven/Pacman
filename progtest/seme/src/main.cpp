@@ -44,6 +44,14 @@ void openFont(TTF_Font *&font)
     font = TTF_OpenFont(fontPath.c_str(), FONT_SIZE);
 }
 
+void loadHighScores(CGameState &gamestate)
+{
+}
+
+void saveHighScores(CGameState &gamestate)
+{
+}
+
 void closeFont(TTF_Font *font)
 {
     TTF_CloseFont(font);
@@ -310,7 +318,7 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
     drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
 }
 
-void drawScoreBoardOverlay(SDL_Renderer *renderer, TTF_Font *font)
+void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
 
@@ -326,10 +334,20 @@ void drawScoreBoardOverlay(SDL_Renderer *renderer, TTF_Font *font)
     std::string text2 = "ESC                                     QUIT";
     std::string text3 = "H                                          BACK";
 
-    // TODO
+    int position = 1;
+    for (auto score : gamestate.highscores)
+    {
+        if (position > 3)
+            break;
+
+        std::string scoreText = std::to_string(position) + ". SCORE " + std::to_string(score.first) + "    LEVEL " + std::to_string(score.second);
+        position++;
+        drawText(renderer, font, scoreText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3 + WINDOW_HEIGHT * (position * 0.1));
+    }
+
     drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
-    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
-    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.3);
+    drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.3);
+    drawText(renderer, font, text3, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.4);
 }
 
 void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
@@ -354,7 +372,7 @@ void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
         drawGameOverOverlay(gamestate, renderer, font);
 
     else if (gamestate.screen == CGameState::CScreen::scoreBoard)
-        drawScoreBoardOverlay(renderer, font);
+        drawScoreBoardOverlay(gamestate, renderer, font);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -386,6 +404,7 @@ int main()
     std::vector<std::unique_ptr<CGameObject>> gameObjects;
     initializeWindow(renderer, window);
     openFont(font);
+    loadHighScores(gamestate);
     setup(gamestate, gameObjects);
 
     bool playing = true;
@@ -397,6 +416,7 @@ int main()
         draw(gamestate, gameObjects, renderer, font);
     }
 
+    saveHighScores(gamestate);
     closeFont(font);
     destroyWindow(renderer, window);
 

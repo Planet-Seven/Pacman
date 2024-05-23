@@ -1,6 +1,9 @@
 #include "CGameState.h"
 
-#include "cmath"
+#include <cmath>
+#include <algorithm>
+#include <vector>
+
 constexpr double threshold = 0.05;
 
 // TODO - bound checking
@@ -86,4 +89,10 @@ void CGameState::updatePos(double deltaTime)
 
     if (playerPos.y > BOARDHEIGHT)
         playerPos.y -= BOARDHEIGHT;
+}
+
+void CGameState::saveScore()
+{
+    highscores.push_back({score, level});
+    std::sort(highscores.rbegin(), highscores.rend());
 }
