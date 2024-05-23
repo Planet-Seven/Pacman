@@ -126,6 +126,8 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
     gamestate.nextMove = CDirection::none;
     gamestate.thisMove = CDirection::none;
     gamestate.nextGuard = gamestate.TIME_BETWEEN_GUARD_MODE;
+    gamestate.guardTimeRemaining = 0;
+    gamestate.gamemode = CGameState::CGameMode::chase;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

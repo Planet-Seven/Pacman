@@ -171,5 +171,5 @@ void CMax::draw(SDL_Renderer *renderer, CGameState &gamestate)
 
 CPos CMax::getGuardPos(CGameState &gamestate)
 {
-    return CPos(gamestate.gameMap.BOARDHEIGHT, gamestate.gameMap.BOARDWIDTH);
+    return CPos(gamestate.gameMap.BOARDWIDTH, gamestate.gameMap.BOARDHEIGHT);
 }

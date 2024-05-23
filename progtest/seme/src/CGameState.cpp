@@ -4,9 +4,6 @@
 #include <algorithm>
 #include <vector>
 
-constexpr double threshold = 0.05;
-
-// TODO - bound checking
 bool CGameState::isNextMoveLegal()
 {
     return isAMoveLegal(nextMove, playerPos);
@@ -20,6 +17,7 @@ bool CGameState::isThisMoveLegal()
 bool CGameState::isAMoveLegal(CDirection move, CPos pos)
 {
     std::pair<int, int> intPos = pos.getIntPos();
+    const double threshold = 0.05;
 
     if (move == CDirection::left)
         if ((intPos.first > 0 &&
