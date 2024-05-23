@@ -8,7 +8,10 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
     if (gamestate.gamemode == CGameState::CGameMode::powerup)
         speed *= 0.75;
 
-    targetPos = gamestate.playerPos;
+    if (gamestate.gamemode == CGameState::CGameMode::guard)
+        targetPos = getGuardPos();
+    else
+        targetPos = gamestate.playerPos;
 
     if (currentPos == gamestate.playerPos)
     {
@@ -114,6 +117,11 @@ void CManhattan::draw(SDL_Renderer *renderer, CGameState &gamestate)
     drawGhost(renderer, gamestate, 60, 150, 10);
 }
 
+CPos CManhattan::getGuardPos()
+{
+    return CPos(0, BOARDHEIGHT);
+}
+
 double CEuclid::getNorm(CPos position)
 {
     return hypot(position.x, position.y);
@@ -124,6 +132,11 @@ void CEuclid::draw(SDL_Renderer *renderer, CGameState &gamestate)
     drawGhost(renderer, gamestate, 150, 0, 60);
 }
 
+CPos CEuclid::getGuardPos()
+{
+    return CPos(0, 0);
+}
+
 double CMax::getNorm(CPos position)
 {
     return abs(position.x) < abs(position.y) ? abs(position.y) : abs(position.x);
@@ -132,4 +145,9 @@ double CMax::getNorm(CPos position)
 void CMax::draw(SDL_Renderer *renderer, CGameState &gamestate)
 {
     drawGhost(renderer, gamestate, 150, 60, 10);
+}
+
+CPos CMax::getGuardPos()
+{
+    return CPos(BOARDHEIGHT, BOARDWIDTH);
 }

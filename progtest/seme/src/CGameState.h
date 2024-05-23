@@ -20,8 +20,13 @@ struct CGameState
     int level = 1;
     int score = 0;
     CPos playerPos;
+
     double powerUpTime = INITIAL_POWERUP_TIME;
     double powerUpRemaining = 0;
+
+    double guardTime = INITIAL_GUARD_TIME;
+    double guardTimeRemaining = 0;
+    double nextGuard = TIME_BETWEEN_GUARD_MODE;
 
     enum class CScreen
     {

@@ -21,6 +21,7 @@ public:
     void getNextPos(CGameState &gamestate);
     virtual double getNorm(CPos position) = 0;
     void drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int G, int B);
+    virtual CPos getGuardPos() = 0;
 
 protected:
     const CPos startPos;
@@ -49,6 +50,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
     virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
+    virtual CPos getGuardPos() override;
 };
 
 /** \class CEuclid
@@ -70,6 +72,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
     virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
+    virtual CPos getGuardPos() override;
 };
 
 /** \class CManhattan
@@ -91,4 +94,5 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     /// Draw the ghost on the screen.
     virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
+    virtual CPos getGuardPos() override;
 };

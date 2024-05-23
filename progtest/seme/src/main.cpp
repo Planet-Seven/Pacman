@@ -120,6 +120,7 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
     gamestate.gameMap.coinCount = coinCount;
     gamestate.nextMove = CDirection::none;
     gamestate.thisMove = CDirection::none;
+    gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -192,6 +193,13 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
     if (gamestate.gameMap.coinCount == 0)
     {
         gamestate.level++;
+
+        if (gamestate.guardTime > 1)
+            gamestate.guardTime -= GUARD_TIME_DECREMENT;
+
+        if (gamestate.powerUpTime > 1)
+            gamestate.powerUpTime -= POWER_UP_TIME_DECREMENT;
+
         gameObjects.clear();
         setup(gamestate, gameObjects);
     }
@@ -201,6 +209,8 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 
     if (gamestate.screen == CGameState::CScreen::playing)
     {
+        gamestate.nextGuard -= deltaTime;
+
         if (gamestate.isThisMoveLegal())
             gamestate.updatePos(deltaTime);
 
@@ -213,6 +223,20 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 
             if (gamestate.powerUpRemaining <= 0)
                 gamestate.gamemode = CGameState::CGameMode::chase;
+        }
+        if (gamestate.guardTimeRemaining > 0)
+        {
+            gamestate.guardTimeRemaining -= deltaTime;
+
+            if (gamestate.guardTimeRemaining <= 0)
+                gamestate.gamemode = CGameState::CGameMode::chase;
+        }
+
+        if (gamestate.nextGuard < 0 && gamestate.gamemode != CGameState::CGameMode::powerup) // ghosts will not enter guard mode while a power up is active
+        {
+            gamestate.gamemode = CGameState::CGameMode::guard;
+            gamestate.guardTimeRemaining = gamestate.guardTime;
+            gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
         }
 
         for (auto const &gameObject : gameObjects)
