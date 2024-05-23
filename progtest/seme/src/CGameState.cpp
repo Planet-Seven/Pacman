@@ -117,8 +117,45 @@ void CGameState::loadBoardHeight(std::ifstream &config)
 
     getline(config, valueName); // flush the rest of the line
 }
+
+CGameMap::CMapObjects ASCIIToMapObject(char c)
+{
+    switch (c)
+    {
+    case 'W':
+        return CGameMap::CMapObjects::W;
+    case 'C':
+        return CGameMap::CMapObjects::C;
+    case 'S':
+        return CGameMap::CMapObjects::S;
+        break;
+    case 'm':
+        return CGameMap::CMapObjects::m;
+    case 't':
+        return CGameMap::CMapObjects::t;
+    case 'e':
+        return CGameMap::CMapObjects::e;
+    case 'P':
+        return CGameMap::CMapObjects::P;
+    default:
+        return CGameMap::CMapObjects::O;
+    }
+}
+
 void CGameState::loadBoard(std::ifstream &config)
 {
+    std::string boardLine;
+    if (!getline(config, boardLine)) // flush the first line
+        throw std::invalid_argument("unable to read game board");
+
+    for (int i = 0; i < gameMap.BOARDHEIGHT; i++)
+    {
+        if (!getline(config, boardLine))
+            throw std::invalid_argument("unable to read game board");
+
+        for (int j = 0; j < gameMap.BOARDWIDTH; j++)
+            gameMap.map[i][j] = ASCIIToMapObject(boardLine[j]);
+    }
 }
 
 void CGameState::loadConfig()
