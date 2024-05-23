@@ -81,16 +81,9 @@ void closeFont(TTF_Font *font)
     TTF_CloseFont(font);
     TTF_Quit();
 }
-////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-/// @param[in] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
-///
-/// Setup is run once before the game loop starts. Initializes gameObjects.
-void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
-{
-    std::vector<CPos> teleportPositions;
-    int coinCount = 0;
 
+void loadGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &coinCount)
+{
     for (int i = 0; i < BOARDHEIGHT; i++)
         for (int j = 0; j < BOARDWIDTH; j++)
 
@@ -116,6 +109,18 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
                 gameObjects.push_back(std::unique_ptr<CGameObject>(new CEuclid(CPos(j, i))));
                 break;
             }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @param[in] gamestate a gamestate variable
+/// @param[in] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
+///
+/// Setup is run once before the game loop starts. Initializes gameObjects.
+void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
+{
+    std::vector<CPos> teleportPositions;
+    int coinCount = 0;
+    loadGameObjects(gamestate, gameObjects, coinCount);
 
     gamestate.gameMap.coinCount = coinCount;
     gamestate.nextMove = CDirection::none;
@@ -128,6 +133,59 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
 /// @param[in] playing a boolean that maintains the game cycle.
 ///
 /// Handles user input. Checks for escape and arrow keys.
+
+void processInputPlayingScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+{
+    if (event.key.keysym.sym == SDLK_UP)
+        gamestate.nextMove = CDirection::up;
+    else if (event.key.keysym.sym == SDLK_DOWN)
+        gamestate.nextMove = CDirection::down;
+    else if (event.key.keysym.sym == SDLK_LEFT)
+        gamestate.nextMove = CDirection::left;
+    else if (event.key.keysym.sym == SDLK_RIGHT)
+        gamestate.nextMove = CDirection::right;
+}
+
+void processInputGameOverScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+{
+    if (event.key.keysym.sym == SDLK_SPACE)
+    {
+        gameObjects.clear();
+        gamestate.score = 0;
+        gamestate.level = 1;
+        setup(gamestate, gameObjects);
+        gamestate.screen = CGameState::CScreen::playing;
+    }
+    else if (event.key.keysym.sym == SDLK_h)
+    {
+        gamestate.screen = CGameState::CScreen::scoreBoard;
+    }
+}
+
+void processInputScoreBoardScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+{
+    if (event.key.keysym.sym == SDLK_h)
+        gamestate.screen = CGameState::CScreen::gameOver;
+}
+
+void handleKeyDown(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+{
+    if (gamestate.screen == CGameState::CScreen::start)
+        gamestate.screen = CGameState::CScreen::playing;
+
+    if (gamestate.screen == CGameState::CScreen::playing) // not including this in an else block allows the first arrow key press to be registered
+        processInputPlayingScreen(gamestate, gameObjects, playing, event);
+
+    else if (gamestate.screen == CGameState::CScreen::gameOver)
+        processInputGameOverScreen(gamestate, gameObjects, playing, event);
+
+    else if (gamestate.screen == CGameState::CScreen::scoreBoard)
+        processInputScoreBoardScreen(gamestate, gameObjects, playing, event);
+
+    if (event.key.keysym.sym == SDLK_ESCAPE) // break the game cycle
+        playing = false;
+}
+
 void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing)
 {
     SDL_Event event;
@@ -140,44 +198,7 @@ void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject
         break;
 
     case (SDL_KEYDOWN):
-        if (gamestate.screen == CGameState::CScreen::start)
-            gamestate.screen = CGameState::CScreen::playing;
-
-        if (gamestate.screen == CGameState::CScreen::playing) // not including this in an else block allows the first arrow key press to be registered
-        {
-            if (event.key.keysym.sym == SDLK_UP)
-                gamestate.nextMove = CDirection::up;
-            if (event.key.keysym.sym == SDLK_DOWN)
-                gamestate.nextMove = CDirection::down;
-            if (event.key.keysym.sym == SDLK_LEFT)
-                gamestate.nextMove = CDirection::left;
-            if (event.key.keysym.sym == SDLK_RIGHT)
-                gamestate.nextMove = CDirection::right;
-        }
-        else if (gamestate.screen == CGameState::CScreen::gameOver)
-        {
-            if (event.key.keysym.sym == SDLK_SPACE)
-            {
-                gameObjects.clear();
-                gamestate.score = 0;
-                gamestate.level = 1;
-                setup(gamestate, gameObjects);
-                gamestate.screen = CGameState::CScreen::playing;
-            }
-            if (event.key.keysym.sym == SDLK_h)
-            {
-                gamestate.screen = CGameState::CScreen::scoreBoard;
-            }
-        }
-        else if (gamestate.screen == CGameState::CScreen::scoreBoard)
-        {
-            if (event.key.keysym.sym == SDLK_h)
-                gamestate.screen = CGameState::CScreen::gameOver;
-        }
-
-        if (event.key.keysym.sym == SDLK_ESCAPE) // break the game cycle
-            playing = false;
-
+        handleKeyDown(gamestate, gameObjects, playing, event);
         break;
     }
 }
@@ -188,20 +209,81 @@ void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject
 /// @param[in] lastFrameTime Time ellapsed from previous frame. Used for proper delta-time calculations
 ///
 /// Runs once every frame. Used mainly to check for collisions and update game objects' and player's position.
+
+void increaseLevel(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
+{
+    gamestate.level++;
+
+    if (gamestate.guardTime > 1)
+        gamestate.guardTime -= GUARD_TIME_DECREMENT;
+
+    if (gamestate.powerUpTime > 1)
+        gamestate.powerUpTime -= POWER_UP_TIME_DECREMENT;
+
+    gameObjects.clear();
+    setup(gamestate, gameObjects);
+}
+
+void updatePowerUp(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+{
+    if (gamestate.powerUpRemaining > 0)
+    {
+        gamestate.powerUpRemaining -= deltaTime;
+
+        if (gamestate.powerUpRemaining <= 0)
+            gamestate.gamemode = CGameState::CGameMode::chase;
+    }
+}
+
+void updateGuard(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+{
+    if (gamestate.guardTimeRemaining > 0)
+    {
+        gamestate.guardTimeRemaining -= deltaTime;
+
+        if (gamestate.guardTimeRemaining <= 0)
+            gamestate.gamemode = CGameState::CGameMode::chase;
+    }
+
+    if (gamestate.nextGuard < 0 && gamestate.gamemode != CGameState::CGameMode::powerup) // ghosts will not enter guard mode while a power up is active
+    {
+        gamestate.gamemode = CGameState::CGameMode::guard;
+        gamestate.guardTimeRemaining = gamestate.guardTime;
+        gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
+    }
+}
+
+void updateGameModes(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+{
+    updatePowerUp(gamestate, gameObjects, deltaTime);
+    updateGuard(gamestate, gameObjects, deltaTime);
+}
+
+void updateGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+{
+    for (auto const &gameObject : gameObjects)
+        gameObject->update(gamestate, deltaTime);
+}
+
+void updatePlaying(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+{
+    gamestate.nextGuard -= deltaTime;
+
+    if (gamestate.isThisMoveLegal())
+        gamestate.updatePos(deltaTime);
+
+    if (gamestate.isNextMoveLegal())
+        gamestate.updateMoves();
+
+    updateGameModes(gamestate, gameObjects, deltaTime);
+    updateGameObjects(gamestate, gameObjects, deltaTime);
+}
+
 void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &lastFrameTime)
 {
     if (gamestate.gameMap.coinCount == 0)
     {
-        gamestate.level++;
-
-        if (gamestate.guardTime > 1)
-            gamestate.guardTime -= GUARD_TIME_DECREMENT;
-
-        if (gamestate.powerUpTime > 1)
-            gamestate.powerUpTime -= POWER_UP_TIME_DECREMENT;
-
-        gameObjects.clear();
-        setup(gamestate, gameObjects);
+        increaseLevel(gamestate, gameObjects);
     }
 
     double deltaTime = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
@@ -209,38 +291,7 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 
     if (gamestate.screen == CGameState::CScreen::playing)
     {
-        gamestate.nextGuard -= deltaTime;
-
-        if (gamestate.isThisMoveLegal())
-            gamestate.updatePos(deltaTime);
-
-        if (gamestate.isNextMoveLegal())
-            gamestate.updateMoves();
-
-        if (gamestate.powerUpRemaining > 0)
-        {
-            gamestate.powerUpRemaining -= deltaTime;
-
-            if (gamestate.powerUpRemaining <= 0)
-                gamestate.gamemode = CGameState::CGameMode::chase;
-        }
-        if (gamestate.guardTimeRemaining > 0)
-        {
-            gamestate.guardTimeRemaining -= deltaTime;
-
-            if (gamestate.guardTimeRemaining <= 0)
-                gamestate.gamemode = CGameState::CGameMode::chase;
-        }
-
-        if (gamestate.nextGuard < 0 && gamestate.gamemode != CGameState::CGameMode::powerup) // ghosts will not enter guard mode while a power up is active
-        {
-            gamestate.gamemode = CGameState::CGameMode::guard;
-            gamestate.guardTimeRemaining = gamestate.guardTime;
-            gamestate.nextGuard = TIME_BETWEEN_GUARD_MODE;
-        }
-
-        for (auto const &gameObject : gameObjects)
-            gameObject->update(gamestate, deltaTime);
+        updatePlaying(gamestate, gameObjects, deltaTime);
     }
 }
 
@@ -366,6 +417,20 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
     drawText(renderer, font, text5, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.2);
 }
 
+void drawScores(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
+{
+    int position = 1;
+    for (auto score : gamestate.highscores)
+    {
+        if (position > 3)
+            break;
+
+        std::string scoreText = std::to_string(position) + ". SCORE " + std::to_string(score.first) + "    LEVEL " + std::to_string(score.second);
+        position++;
+        drawText(renderer, font, scoreText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3 + WINDOW_HEIGHT * (position * 0.1));
+    }
+}
+
 void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
@@ -378,20 +443,11 @@ void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Fo
 
     SDL_RenderFillRect(renderer, &background);
 
+    drawScores(gamestate, renderer, font);
+
     std::string text = "HIGH SCORES";
     std::string text2 = "ESC                                     QUIT";
     std::string text3 = "H                                          BACK";
-
-    int position = 1;
-    for (auto score : gamestate.highscores)
-    {
-        if (position > 3)
-            break;
-
-        std::string scoreText = std::to_string(position) + ". SCORE " + std::to_string(score.first) + "    LEVEL " + std::to_string(score.second);
-        position++;
-        drawText(renderer, font, scoreText, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3 + WINDOW_HEIGHT * (position * 0.1));
-    }
 
     drawText(renderer, font, text, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - WINDOW_HEIGHT * 0.3);
     drawText(renderer, font, text2, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + WINDOW_HEIGHT * 0.3);

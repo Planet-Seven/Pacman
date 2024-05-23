@@ -69,25 +69,25 @@ void CGameState::updatePos(double deltaTime)
     if (thisMove == CDirection::up)
         playerPos.y -= PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CDirection::down)
+    else if (thisMove == CDirection::down)
         playerPos.y += PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CDirection::left)
+    else if (thisMove == CDirection::left)
         playerPos.x -= PLAYER_SPEED * deltaTime;
 
-    if (thisMove == CDirection::right)
+    else if (thisMove == CDirection::right)
         playerPos.x += PLAYER_SPEED * deltaTime;
 
     if (playerPos.x < -1)
         playerPos.x += BOARDWIDTH;
 
-    if (playerPos.y < -1)
+    else if (playerPos.y < -1)
         playerPos.y += BOARDHEIGHT;
 
-    if (playerPos.x > BOARDWIDTH)
+    else if (playerPos.x > BOARDWIDTH)
         playerPos.x -= BOARDWIDTH;
 
-    if (playerPos.y > BOARDHEIGHT)
+    else if (playerPos.y > BOARDHEIGHT)
         playerPos.y -= BOARDHEIGHT;
 }
 
