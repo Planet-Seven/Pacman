@@ -2,7 +2,18 @@ all: build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o
 	mkdir -p build
 	g++ -Wall -pedantic -o2 build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pacman
 	touch build/highscores.txt
+	doxygen
+
+compile: build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o
+	mkdir -p build
+	g++ -Wall -pedantic -o2 build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pacman
+	touch build/highscores.txt
+
+run:
 	./pacman
+
+doc:
+	doxygen
 
 build/main.o: build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o
 	mkdir -p build
@@ -46,6 +57,7 @@ build/CPos.o:
 
 clean:
 	rm -r build
-	rm pac.out
+	rm pacman
+	rm -r doc
 
 .PHONY: clean
