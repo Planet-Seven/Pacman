@@ -5,8 +5,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <fstream>
-#include "CGhost.h"
-#include "CCollectible.h"
+
+#include "CMax.h"
+#include "CManhattan.h"
+#include "CEuclid.h"
+#include "CCoin.h"
+#include "CPowerUp.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// initializes a SDL window

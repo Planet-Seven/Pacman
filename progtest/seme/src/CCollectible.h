@@ -15,25 +15,3 @@ protected:
     CPos pos;
     bool collected = false;
 };
-
-/** \class CCoin
-A class that represents a coin that increases player score on collection.
-*/
-class CCoin : public CCollectible
-{
-public:
-    CCoin(CPos pos) : CCollectible(pos){};
-    virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
-};
-
-/** \class CPowerUp
-A class that represents a power pelet that allows the player to eat the gosts for a limited time.
-*/
-class CPowerUp : public CCollectible
-{
-public:
-    CPowerUp(CPos pos) : CCollectible(pos){};
-    virtual void doEffect(CGameState &gamestate) override;
-    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
-};
