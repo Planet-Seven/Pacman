@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <fstream>
 #include "CGhost.h"
 #include "CCollectible.h"
 
@@ -46,10 +47,33 @@ void openFont(TTF_Font *&font)
 
 void loadHighScores(CGameState &gamestate)
 {
+    std::string score;
+    std::string level;
+    std::ifstream highscores("build/highscores.txt");
+    if (highscores.is_open())
+    {
+        while (getline(highscores, score, ';') && getline(highscores, level))
+        {
+            gamestate.highscores.push_back({atoi(score.c_str()), atoi(level.c_str())});
+        }
+        highscores.close();
+    }
+    else
+        std::cout << "An error occured while loading highscores";
 }
 
 void saveHighScores(CGameState &gamestate)
 {
+    std::ofstream highscores("build/highscores.txt");
+    if (highscores.is_open())
+    {
+        highscores.clear();
+
+        for (auto score : gamestate.highscores)
+            highscores << score.first << ";" << score.second << std::endl;
+    }
+    else
+        std::cout << "An error occured while saving highscores";
 }
 
 void closeFont(TTF_Font *font)
