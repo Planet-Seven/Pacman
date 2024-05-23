@@ -18,12 +18,17 @@ public:
     /// \param[in] gamestate a gamestate variable
     ///
     /// Find the next position the ghost will take using the appropriate vector norm.
-    void getNextPos(CGameState &gamestate);
     virtual double getNorm(CPos position) = 0;
     void drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int G, int B);
     virtual CPos getGuardPos() = 0;
 
 protected:
+    void findPossibleMoves(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
+    void pickBestMove(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
+    void handlePlayerCollision(CGameState &gamestate);
+    void setTargetPos(CGameState &gamestate);
+    void getNextPos(CGameState &gamestate);
+    void updatePos(CGameState &gamestate, double deltaTime, double speed);
     const CPos startPos;
     CPos currentPos; ///< the position the ghost right now
     CPos nextPos;    ///< the position the ghost will take next

@@ -2,33 +2,8 @@
 #include <vector>
 #include <iostream>
 
-void CGhost::update(CGameState &gamestate, double deltaTime)
+void CGhost::updatePos(CGameState &gamestate, double deltaTime, double speed)
 {
-    double speed = PLAYER_SPEED;
-    if (gamestate.gamemode == CGameState::CGameMode::powerup)
-        speed *= 0.75;
-
-    if (gamestate.gamemode == CGameState::CGameMode::guard)
-        targetPos = getGuardPos();
-    else
-        targetPos = gamestate.playerPos;
-
-    if (currentPos == gamestate.playerPos)
-    {
-        if (gamestate.gamemode == CGameState::CGameMode::powerup)
-        {
-            gamestate.score += 400;
-            currentPos = startPos;
-        }
-        else
-        {
-            gamestate.saveScore();
-            gamestate.screen = CGameState::CScreen::gameOver;
-        }
-    }
-
-    getNextPos(gamestate);
-
     if (direction == CDirection::up)
         currentPos.y -= speed * deltaTime;
     else if (direction == CDirection::down)
@@ -48,9 +23,45 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
         currentPos.y -= BOARDHEIGHT;
 }
 
-void CGhost::getNextPos(CGameState &gamestate)
+void CGhost::setTargetPos(CGameState &gamestate)
 {
-    std::vector<std::pair<CPos, CDirection>> possibleMoves;
+    if (gamestate.gamemode == CGameState::CGameMode::guard)
+        targetPos = getGuardPos();
+    else
+        targetPos = gamestate.playerPos;
+}
+
+void CGhost::handlePlayerCollision(CGameState &gamestate)
+{
+    if (gamestate.gamemode == CGameState::CGameMode::powerup)
+    {
+        gamestate.score += 400;
+        currentPos = startPos;
+    }
+    else
+    {
+        gamestate.saveScore();
+        gamestate.screen = CGameState::CScreen::gameOver;
+    }
+}
+
+void CGhost::update(CGameState &gamestate, double deltaTime)
+{
+    double speed = PLAYER_SPEED;
+    if (gamestate.gamemode == CGameState::CGameMode::powerup)
+        speed *= 0.75;
+
+    setTargetPos(gamestate);
+
+    if (currentPos == gamestate.playerPos)
+        handlePlayerCollision(gamestate);
+
+    getNextPos(gamestate);
+    updatePos(gamestate, deltaTime, speed);
+}
+
+void CGhost::findPossibleMoves(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves)
+{
     std::pair<int, int> intPos = currentPos.getIntPos();
 
     if (gamestate.isAMoveLegal(CDirection::up, currentPos) && direction != CDirection::down)
@@ -64,7 +75,10 @@ void CGhost::getNextPos(CGameState &gamestate)
 
     if (gamestate.isAMoveLegal(CDirection::right, currentPos) && direction != CDirection::left)
         possibleMoves.push_back({CPos(intPos.first + 1, intPos.second), CDirection::right});
+}
 
+void CGhost::pickBestMove(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves)
+{
     if (!possibleMoves.empty())
     {
         direction = possibleMoves[0].second;
@@ -75,13 +89,14 @@ void CGhost::getNextPos(CGameState &gamestate)
 
     for (auto move : possibleMoves)
     {
+        // while chasing, we want to pick the position closest to the player
         if (gamestate.gamemode == CGameState::CGameMode::chase &&
             getNorm(nextPos - gamestate.playerPos) > getNorm(move.first - gamestate.playerPos))
         {
             direction = move.second;
             nextPos = move.first;
         }
-
+        // during a power up, we pick the opposite
         else if (gamestate.gamemode == CGameState::CGameMode::powerup &&
                  getNorm(nextPos - gamestate.playerPos) < getNorm(move.first - gamestate.playerPos))
         {
@@ -89,6 +104,13 @@ void CGhost::getNextPos(CGameState &gamestate)
             nextPos = move.first;
         }
     }
+}
+void CGhost::getNextPos(CGameState &gamestate)
+{
+    std::vector<std::pair<CPos, CDirection>> possibleMoves;
+
+    findPossibleMoves(gamestate, possibleMoves);
+    pickBestMove(gamestate, possibleMoves);
 }
 
 void CGhost::drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int G, int B)
