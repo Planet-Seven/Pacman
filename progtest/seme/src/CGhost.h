@@ -18,11 +18,11 @@ public:
     /// \param[in] gamestate a gamestate variable
     ///
     /// Find the next position the ghost will take using the appropriate vector norm.
-    virtual double getNorm(CPos position) = 0;
     void drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int G, int B);
-    virtual CPos getGuardPos() = 0;
 
 protected:
+    virtual double getNorm(CPos position) = 0;
+    virtual CPos getGuardPos() = 0;
     void findPossibleMoves(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
     void pickBestMove(CGameState &gamestate, std::vector<std::pair<CPos, CDirection>> &possibleMoves);
     void handlePlayerCollision(CGameState &gamestate);
@@ -43,7 +43,11 @@ class CManhattan : public CGhost
 {
 public:
     CManhattan(CPos pos) : CGhost(pos){};
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Draw the ghost on the screen.
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
 
+protected:
     ////////////////////////////////////////////////////////////////////////////////
     /// Find the next position to take.
     ///
@@ -52,9 +56,6 @@ public:
     /// Find the next position the ghost will take using the mahattan vector norm.
     virtual double getNorm(CPos position) override;
 
-    ////////////////////////////////////////////////////////////////////////////////
-    /// Draw the ghost on the screen.
-    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
     virtual CPos getGuardPos() override;
 };
 
@@ -65,7 +66,11 @@ class CEuclid : public CGhost
 {
 public:
     CEuclid(CPos pos) : CGhost(pos){};
+    ////////////////////////////////////////////////////////////////////////////////
+    /// Draw the ghost on the screen.
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
 
+protected:
     ////////////////////////////////////////////////////////////////////////////////
     /// Find the next position to take.
     ///
@@ -73,10 +78,6 @@ public:
     ///
     /// Find the next position the ghost will take using euclidean vector norm.
     virtual double getNorm(CPos position) override;
-
-    ////////////////////////////////////////////////////////////////////////////////
-    /// Draw the ghost on the screen.
-    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
     virtual CPos getGuardPos() override;
 };
 
@@ -89,15 +90,16 @@ public:
     CMax(CPos pos) : CGhost(pos){};
 
     ////////////////////////////////////////////////////////////////////////////////
+    /// Draw the ghost on the screen.
+    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
+
+protected:
+    ////////////////////////////////////////////////////////////////////////////////
     /// Find the next position to take.
     ///
     /// \param[in] gamestate a gamestate variable
     ///
     /// Find the next position the ghost will take using maximum vector norm.
     virtual double getNorm(CPos position) override;
-
-    ////////////////////////////////////////////////////////////////////////////////
-    /// Draw the ghost on the screen.
-    virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
     virtual CPos getGuardPos() override;
 };
