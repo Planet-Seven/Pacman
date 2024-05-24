@@ -40,3 +40,10 @@ Draw bude bezparametrické, vykreslí předmět na jeho pozici za použití knih
 ---KONTROLNÍ BOD---
 Pro kontrolní bod implementuji hlavičkové soubory většiny tříd a ucelený gameloop v souboru main.cpp. Gameloop je  framerate-independent a správně pracuje s časem mezi snímky (implementace delta time).
 Soubor je zkompilovatelný, po spuštění vykreslí herní mapu a hráče. Umožňuje jednoduché ovládání bez kontroly omezení herního pole.
+
+---ODEVZDÁNÍ SEMESTRÁLNÍ PRÁCE---
+Při implementaci došlo k drobným změnám. Předně jsem se rozhodl neimplementovat herní režim lights out. Tím, že jsou duchové agresivnější (v režimu chase mají všichni tři cíl na poloze hráče)
+a hráče pronásledují poměrně těsně, by byl spíše otravným vizuálním smogem. Portály jsem se nakonec rozhodl implementovat jednoduchým modulením hráčovi polohy, je to přirozenější,
+implementačně jednodušší a efekt je ve finále stejný.
+
+Navíc jsem přidal tabulku s nejvyšším skórem, kterou ukládám do souboru, a konfigurační soubor, kterým lze měnit nastavení hry.
