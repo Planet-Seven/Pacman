@@ -6,23 +6,21 @@ A 2-d array and a set of constants to represent the game board.
 */
 struct CGameMap
 {
-    // configuration constants loaded from a config file. If no config file is present, or the loading fails, the defaults are used.
-    int BOARDHEIGHT = 31;
-    int BOARDWIDTH = 28;
-    //------------------------------------------------------------------------------------------------------------------------------
 
-    int coinCount = 240;
+    int BOARDHEIGHT = 31; ///< configuration constant loaded from a config file. If no config file is present, or the loading fails, the default is used.
+    int BOARDWIDTH = 28;  ///< configuration constant loaded from a config file. If no config file is present, or the loading fails, the default is used.
+    int coinCount = 240;  ///< configuration constant loaded from a config file. If no config file is present, or the loading fails, the default is used.
 
     enum CMapObjects
     {
-        W, // wall
-        C, // coin
-        P, // powerup
-        S, // player start pos
-        m, // Max start pos
-        t, // manhaTtan start pos
-        e, // Euclides start pos
-        O  // empty
+        W, ///< wall
+        C, ///< coin
+        P, ///< powerup
+        S, ///< player start pos
+        m, ///< Max start pos
+        t, ///< manhaTtan start pos
+        e, ///< Euclides start pos
+        O  ///< empty
     };
     short unsigned int map[MAXWIDTH][MAXWIDTH] = {
         {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W},
@@ -56,5 +54,5 @@ struct CGameMap
         {W, C, W, W, W, W, W, W, W, W, W, W, C, W, W, C, W, W, W, W, W, W, W, W, W, W, C, W},
         {W, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, C, W},
         {W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W},
-    };
+    }; ///< configuration constant loaded from a config file. If no config file is present, or the loading fails, the default is used. A 2-d array with enum constants is used to represent the game board.
 };
