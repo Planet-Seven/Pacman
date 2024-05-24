@@ -9,6 +9,8 @@ class CPowerUp : public CCollectible
 {
 public:
     CPowerUp(CPos pos) : CCollectible(pos){};
-    virtual void doEffect(CGameState &gamestate) override;
     virtual void draw(SDL_Renderer *renderer, CGameState &gamestate) override;
+
+private:
+    virtual void doEffect(CGameState &gamestate) override;
 };
