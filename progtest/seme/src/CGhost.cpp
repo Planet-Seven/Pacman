@@ -13,6 +13,7 @@ void CGhost::updatePos(CGameState &gamestate, double deltaTime, double speed)
     else if (direction == CDirection::right)
         currentPos.x += speed * deltaTime;
 
+    // we want the ghost to appear on the other side when he exits the map
     if (currentPos.x < -1)
         currentPos.x += gamestate.gameMap.BOARDWIDTH;
     else if (currentPos.y < -1)
@@ -64,7 +65,7 @@ void CGhost::findPossibleMoves(CGameState &gamestate, std::vector<std::pair<CPos
 {
     std::pair<int, int> intPos = currentPos.getIntPos();
 
-    if (gamestate.isAMoveLegal(CDirection::up, currentPos) && direction != CDirection::down)
+    if (gamestate.isAMoveLegal(CDirection::up, currentPos) && direction != CDirection::down) // ghost cannot turn around when in a tunnel
         possibleMoves.push_back({CPos(intPos.first, intPos.second - 1), CDirection::up});
 
     if (gamestate.isAMoveLegal(CDirection::down, currentPos) && direction != CDirection::up)

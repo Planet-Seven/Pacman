@@ -207,39 +207,39 @@ bool CGameState::isThisMoveLegal()
 bool CGameState::isAMoveLegal(CDirection move, CPos pos)
 {
     std::pair<int, int> intPos = pos.getIntPos();
-    const double threshold = 0.05;
+    const double threshold = 0.05; // Experimentaly set. Needs to be low enough so that the position is close to a whole number and high enough that we do not skip it between two frames.
 
     if (move == CDirection::left)
-        if ((intPos.first > 0 &&
-             gameMap.map[intPos.second][intPos.first - 1] == gameMap.W &&
-             pos.x - intPos.first < threshold) ||
+        if ((intPos.first > 0 &&                                          // prevents a segfault if the player is at the very edge of the map
+             gameMap.map[intPos.second][intPos.first - 1] == gameMap.W && // check if there is a wall
+             pos.x - intPos.first < threshold) ||                         // check that the x position is close to a whole number. We can't just cast because we are approaching the whole number from the bottom
 
-            (pos.y - intPos.second > threshold))
+            (pos.y - intPos.second > threshold)) // we are too far from a whole number
 
             return false;
 
     if (move == CDirection::right)
-        if ((intPos.first < gameMap.BOARDWIDTH - 1 &&
-             gameMap.map[intPos.second][intPos.first + 1] == gameMap.W) ||
+        if ((intPos.first < gameMap.BOARDWIDTH - 1 &&                      // prevents a segfault if the player is at the very edge of the map
+             gameMap.map[intPos.second][intPos.first + 1] == gameMap.W) || // check if there is a wall
 
-            (pos.y - intPos.second > threshold))
+            (pos.y - intPos.second > threshold)) // we are too far from a whole number
 
             return false;
 
     if (move == CDirection::up)
-        if ((intPos.second > 0 &&
-             gameMap.map[intPos.second - 1][intPos.first] == gameMap.W &&
-             pos.y - intPos.second < threshold) ||
+        if ((intPos.second > 0 &&                                         // prevents a segfault if the player is at the very edge of the map
+             gameMap.map[intPos.second - 1][intPos.first] == gameMap.W && // check if there is a wall
+             pos.y - intPos.second < threshold) ||                        // check that the y position is close to a whole number. We can't just cast because we are approaching the whole number from the bottom
 
-            (pos.x - intPos.first > threshold))
+            (pos.x - intPos.first > threshold)) // we are too far from a whole number
 
             return false;
 
     if (move == CDirection::down)
-        if ((intPos.second < gameMap.BOARDHEIGHT - 1 &&
-             gameMap.map[intPos.second + 1][intPos.first] == gameMap.W) ||
+        if ((intPos.second < gameMap.BOARDHEIGHT - 1 &&                    // prevents a segfault if the player is at the very edge of the map
+             gameMap.map[intPos.second + 1][intPos.first] == gameMap.W) || // check if there is a wall
 
-            (pos.x - intPos.first > threshold))
+            (pos.x - intPos.first > threshold)) // we are too far from a whole number
 
             return false;
 
@@ -266,6 +266,7 @@ void CGameState::updatePos(double deltaTime)
     else if (thisMove == CDirection::right)
         playerPos.x += PLAYER_SPEED * deltaTime;
 
+    // we want to set the position to the other side if the player exits the map
     if (playerPos.x < -1)
         playerPos.x += gameMap.BOARDWIDTH;
 
