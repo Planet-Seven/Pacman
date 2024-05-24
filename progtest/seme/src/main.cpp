@@ -12,8 +12,24 @@
 #include "CCoin.h"
 #include "CPowerUp.h"
 
+/*! \mainpage My Personal Index Page
+ *
+ * \section intro_sec Introduction
+ *
+ * This is the introduction.
+ *
+ * \section install_sec Installation
+ *
+ * \subsection step1 Step 1: Opening the box
+ *
+ * etc...
+ */
+
 ////////////////////////////////////////////////////////////////////////////////
-/// initializes a SDL window
+/// Initializes a SDL window.
+///
+/// @param [in] renderer the renderer that will be initialized
+/// @param [in] window the window that will be initialized
 void initializeWindow(CGameState &gamestate, SDL_Renderer *&renderer, SDL_Window *&window)
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -35,7 +51,10 @@ void initializeWindow(CGameState &gamestate, SDL_Renderer *&renderer, SDL_Window
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// destroys a SDL window
+/// Destroys a SDL window.
+///
+/// @param [in] renderer the renderer that will be destroyed
+/// @param [in] window the window that will be destroyed
 void destroyWindow(SDL_Renderer *renderer, SDL_Window *window)
 {
     SDL_DestroyRenderer(renderer);
@@ -43,12 +62,30 @@ void destroyWindow(SDL_Renderer *renderer, SDL_Window *window)
     SDL_Quit();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Opens a true type font.
+/// @param [in] gamestate A gamestate variable, used to extract the font size
+/// @param [out] font A font pointer that the function initializes
 void openFont(CGameState &gamestate, TTF_Font *&font)
 {
     std::string fontPath = "assets/fonts/Pixelmania.ttf";
     font = TTF_OpenFont(fontPath.c_str(), gamestate.FONT_SIZE);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Closes a true type font.
+///
+/// @param [out] font A font pointer that the function closes
+void closeFont(TTF_Font *font)
+{
+    TTF_CloseFont(font);
+    TTF_Quit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Loads high scores from a external file to a gamestate instance.
+///
+/// @param [out] gamestate a gamestate instance to be loaded to
 void loadHighScores(CGameState &gamestate)
 {
     std::string score;
@@ -66,6 +103,10 @@ void loadHighScores(CGameState &gamestate)
         std::cout << "An error occured while loading highscores";
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Saves the high scores that are held in the gamestate to an external file.
+///
+/// @param [in] gamestate a gamestate instance holding the high scores
 void saveHighScores(CGameState &gamestate)
 {
     std::ofstream highscores("build/highscores.txt");
@@ -80,14 +121,17 @@ void saveHighScores(CGameState &gamestate)
         std::cout << "An error occured while saving highscores";
 }
 
-void closeFont(TTF_Font *font)
+////////////////////////////////////////////////////////////////////////////////
+/// Loads game objects from the game board stored in the gamestate instance
+///
+/// @note This function also initializes the player position and coin count in the gamestate instance
+///
+/// @param [in] gamestate A gamestate instance that holds the game board
+/// @param [out] gameObjects a vector of game objects that will be filled
+void loadGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
-    TTF_CloseFont(font);
-    TTF_Quit();
-}
+    int coinCount = 0;
 
-void loadGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &coinCount)
-{
     for (int i = 0; i < gamestate.gameMap.BOARDHEIGHT; i++)
         for (int j = 0; j < gamestate.gameMap.BOARDWIDTH; j++)
 
@@ -113,20 +157,20 @@ void loadGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObj
                 gameObjects.push_back(std::unique_ptr<CGameObject>(new CEuclid(CPos(j, i))));
                 break;
             }
+
+    gamestate.gameMap.coinCount = coinCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-/// @param[in] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
+/// Initializes game objects and other gamestate variables. Called once before the game loop starts and then on every level increase.
 ///
-/// Setup is run once before the game loop starts. Initializes gameObjects.
+/// @param [out] gamestate a gamestate instance
+/// @param [out] gameObject a vector of unique pointers to game objects. Polymorphism applied here.
 void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
     std::vector<CPos> teleportPositions;
-    int coinCount = 0;
-    loadGameObjects(gamestate, gameObjects, coinCount);
+    loadGameObjects(gamestate, gameObjects);
 
-    gamestate.gameMap.coinCount = coinCount;
     gamestate.nextMove = CDirection::none;
     gamestate.thisMove = CDirection::none;
     gamestate.nextGuard = gamestate.TIME_BETWEEN_GUARD_MODE;
@@ -135,12 +179,11 @@ void setup(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gam
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-/// @param[in] playing a boolean that maintains the game cycle.
+/// Handles user input while the game is being played. Checks for arrow keys input.
 ///
-/// Handles user input. Checks for escape and arrow keys.
-
-void processInputPlayingScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+/// @param [out] gamestate a gamestate instance
+/// @param [in] event the SDL_Event that is being processed in the wrapper function
+void processInputPlayingScreen(CGameState &gamestate, const SDL_Event &event)
 {
     if (event.key.keysym.sym == SDLK_UP)
         gamestate.nextMove = CDirection::up;
@@ -152,7 +195,12 @@ void processInputPlayingScreen(CGameState &gamestate, std::vector<std::unique_pt
         gamestate.nextMove = CDirection::right;
 }
 
-void processInputGameOverScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+////////////////////////////////////////////////////////////////////////////////
+/// Handles user input while in the game over screen. Checks if the player wants to play (space), or view the scoreboard (h).
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] event the SDL_Event that is being processed in the wrapper function
+void processInputGameOverScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, const SDL_Event &event)
 {
     if (event.key.keysym.sym == SDLK_SPACE)
     {
@@ -168,30 +216,48 @@ void processInputGameOverScreen(CGameState &gamestate, std::vector<std::unique_p
     }
 }
 
-void processInputScoreBoardScreen(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
+////////////////////////////////////////////////////////////////////////////////
+/// Handles user input while in the score board screen. Checks if the player wants to go back (h).
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] event the SDL_Event that is being processed in the wrapper function
+void processInputScoreBoardScreen(CGameState &gamestate, const SDL_Event &event)
 {
     if (event.key.keysym.sym == SDLK_h)
         gamestate.screen = CGameState::CScreen::gameOver;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// A wrapper function that processes key input and calls the corresponding screen handler.
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [out] gameObjects a gameObjects vector, cleared/loaded if the game is restarted/started
+/// @param [out] playing a boolean that keeps the game loop running
+/// @param [in] event the SDL_Event that is being processed in the wrapper function
 void handleKeyDown(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing, const SDL_Event &event)
 {
     if (gamestate.screen == CGameState::CScreen::start)
         gamestate.screen = CGameState::CScreen::playing;
 
     if (gamestate.screen == CGameState::CScreen::playing) // not including this in an else block allows the first arrow key press to be registered
-        processInputPlayingScreen(gamestate, gameObjects, playing, event);
+        processInputPlayingScreen(gamestate, event);
 
     else if (gamestate.screen == CGameState::CScreen::gameOver)
-        processInputGameOverScreen(gamestate, gameObjects, playing, event);
+        processInputGameOverScreen(gamestate, gameObjects, event);
 
     else if (gamestate.screen == CGameState::CScreen::scoreBoard)
-        processInputScoreBoardScreen(gamestate, gameObjects, playing, event);
+        processInputScoreBoardScreen(gamestate, event);
 
     if (event.key.keysym.sym == SDLK_ESCAPE) // break the game cycle
         playing = false;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// A wrapper function that checks for a quit event or a key down event and calls the key down event handler (handleKeyDown)
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [out] gameObjects a gameObjects vector, cleared/loaded if the game is restarted/started
+/// @param [in] playing a boolean that keeps the game loop running
 void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, bool &playing)
 {
     SDL_Event event;
@@ -210,12 +276,10 @@ void processInput(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-/// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
-/// @param[in] lastFrameTime Time ellapsed from previous frame. Used for proper delta-time calculations
+/// Called when the player reaches the next level. It increases difficulty by decrementing power up and guard times in the gamestate and re-loads game objects.
 ///
-/// Runs once every frame. Used mainly to check for collisions and update game objects' and player's position.
-
+/// @param [out] gamestate a gamestate instance
+/// @param [out] gameObjects a gameObjects vector, cleared/loaded if the game is restarted/started
 void increaseLevel(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects)
 {
     gamestate.level++;
@@ -230,7 +294,12 @@ void increaseLevel(CGameState &gamestate, std::vector<std::unique_ptr<CGameObjec
     setup(gamestate, gameObjects);
 }
 
-void updatePowerUp(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+////////////////////////////////////////////////////////////////////////////////
+/// Called every frame to check if the ghosts should enter or exit power up mode
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] deltaTime time change since last frame, used for time keeping
+void updatePowerUp(CGameState &gamestate, double deltaTime)
 {
     if (gamestate.powerUpRemaining > 0)
     {
@@ -241,7 +310,12 @@ void updatePowerUp(CGameState &gamestate, std::vector<std::unique_ptr<CGameObjec
     }
 }
 
-void updateGuard(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+////////////////////////////////////////////////////////////////////////////////
+/// Called every frame to check if the ghosts should enter or exit guard mode
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] deltaTime time change since last frame, used for time keeping
+void updateGuard(CGameState &gamestate, double deltaTime)
 {
     if (gamestate.guardTimeRemaining > 0)
     {
@@ -259,18 +333,35 @@ void updateGuard(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>
     }
 }
 
-void updateGameModes(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
+////////////////////////////////////////////////////////////////////////////////
+/// A wrapper function that calls the individual functions taking care of gamemodes (updateGuard and updatePowerUp)
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] deltaTime time change since last frame, used for time keeping
+void updateGameModes(CGameState &gamestate, double deltaTime)
 {
-    updatePowerUp(gamestate, gameObjects, deltaTime);
-    updateGuard(gamestate, gameObjects, deltaTime);
+    updatePowerUp(gamestate, deltaTime);
+    updateGuard(gamestate, deltaTime);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// A wrapper function that polymorphically calls update on every game object.
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] deltaTime time change since last frame, used for time keeping
+/// @param [out] gameObjects a gameObjects vector
 void updateGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
 {
     for (auto const &gameObject : gameObjects)
         gameObject->update(gamestate, deltaTime);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// A wrapper function that updates the player position and calls other update functions. Called if the active window is playing.
+///
+/// @param [out] gamestate a gamestate instance
+/// @param [in] deltaTime time change since last frame, used for time keeping
+/// @param [out] gameObjects a gameObjects vector
 void updatePlaying(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, double deltaTime)
 {
     gamestate.nextGuard -= deltaTime;
@@ -281,10 +372,18 @@ void updatePlaying(CGameState &gamestate, std::vector<std::unique_ptr<CGameObjec
     if (gamestate.isNextMoveLegal())
         gamestate.updateMoves();
 
-    updateGameModes(gamestate, gameObjects, deltaTime);
+    updateGameModes(gamestate, deltaTime);
     updateGameObjects(gamestate, gameObjects, deltaTime);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Runs once every frame. Calls increaseLevel if necessary and updatePlaying if the active screen is "playing".
+///
+/// @note Also handles delta time updates.
+///
+/// @param[in] gamestate a gamestate variable
+/// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
+/// @param[in] lastFrameTime Time ellapsed from previous frame. Used for proper delta-time calculations
 void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, int &lastFrameTime)
 {
     if (gamestate.gameMap.coinCount == 0)
@@ -302,11 +401,13 @@ void update(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &ga
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] x x coordinate
-/// @param[in] y y cooridnate
-///
 /// Draws a simple wall object.
-void drawWall(int x, int y, SDL_Renderer *renderer, CGameState &gamestate)
+///
+/// @param [in] x x coordinate
+/// @param [in] y y cooridnate
+/// @param [in] renderer pointer to the SDL_Renderer
+/// @param [in] gamestate a gamestate variable. Used to read the window dimensions.
+void drawWall(int x, int y, SDL_Renderer *renderer, const CGameState &gamestate)
 {
     SDL_SetRenderDrawColor(renderer, 20, 20, 50, 255);
 
@@ -319,10 +420,11 @@ void drawWall(int x, int y, SDL_Renderer *renderer, CGameState &gamestate)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-///
 /// Draws the playing board.
-void drawMap(CGameState &gamestate, SDL_Renderer *renderer)
+///
+/// @param [in] gamestate a gamestate variable
+/// @param [in] renderer  pointer to the SDL_Renderer
+void drawMap(const CGameState &gamestate, SDL_Renderer *renderer)
 {
     for (int i = 0; i < gamestate.gameMap.BOARDHEIGHT; i++)
         for (int j = 0; j < gamestate.gameMap.BOARDWIDTH; j++)
@@ -331,9 +433,10 @@ void drawMap(CGameState &gamestate, SDL_Renderer *renderer)
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @param[in] gamestate a gamestate variable
-///
 /// Draws the player.
+///
+/// @param[in] gamestate a gamestate variable
+/// @param [in] renderer  pointer to the SDL_Renderer
 void drawPlayer(CGameState &gamestate, SDL_Renderer *renderer)
 {
     SDL_SetRenderDrawColor(renderer, 180, 180, 0, 255);
@@ -347,12 +450,28 @@ void drawPlayer(CGameState &gamestate, SDL_Renderer *renderer)
     SDL_RenderFillRect(renderer, &player);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Draws the game objects. Polymorphism applied here.
+///
+/// @param[in] gamestate a gamestate variable
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
 void drawGameObjects(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer)
 {
     for (auto const &gameObject : gameObjects)
         gameObject->draw(renderer, gamestate);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Draws a text on the given coordinates.
+///
+/// @note The text is centered around these coordinates.
+///
+/// @param[in] renderer pointer to the SDL_Renderer
+/// @param [in] font  pointer to a TTF_Font
+/// @param[in] text a string holding the text
+/// @param[in] x The x coordinate
+/// @param[in] y The y coordinate
 void drawText(SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, int y)
 {
     SDL_Color textColor = {255, 255, 255};
@@ -361,26 +480,33 @@ void drawText(SDL_Renderer *renderer, TTF_Font *font, std::string &text, int x, 
 
     SDL_Texture *fontTexture = nullptr;
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
+    // Drawing a texture instead of a surface is arguably faster, as a texture is stored in the VRAM.
     fontTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
     if (textSurface != nullptr)
     {
         textWidth = textSurface->w;
         textHeight = textSurface->h;
-    }
 
-    SDL_Rect dst = {
-        x - textWidth / 2,
-        y - textHeight / 2,
-        textWidth,
-        textHeight};
-    SDL_RenderCopy(renderer, fontTexture, NULL, &dst);
+        SDL_Rect dst = {
+            x - textWidth / 2,
+            y - textHeight / 2,
+            textWidth,
+            textHeight};
+        SDL_RenderCopy(renderer, fontTexture, NULL, &dst);
+    }
 
     SDL_FreeSurface(textSurface); // cleanup
     SDL_DestroyTexture(fontTexture);
 }
 
-void drawStartOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
+////////////////////////////////////////////////////////////////////////////////
+/// Draws the overlay for when the game is first started.
+///
+/// @param[in] gamestate a gamestate instance. Used to get the window dimensions.
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param[in] font pointer to a TTF_Font
+void drawStartOverlay(const CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
 
@@ -396,6 +522,12 @@ void drawStartOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *f
     drawText(renderer, font, text, gamestate.WINDOW_WIDTH / 2, gamestate.WINDOW_HEIGHT / 2);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Draws the overlay for when the game is over.
+///
+/// @param[in] gamestate a gamestate instance. Used to get the window dimensions.
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param [in] font  pointer to a TTF_Font
 void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
@@ -408,7 +540,7 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
 
     SDL_RenderFillRect(renderer, &background);
 
-    std::string text = "GAME OVER.";
+    std::string text1 = "GAME OVER.";
     std::string text2 = "SCORE " + std::to_string(gamestate.score);
 
     std::string text3 = "ESC                                     QUIT";
@@ -417,8 +549,9 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
 
     drawText(renderer,
              font,
-             text,
+             text1,
              gamestate.WINDOW_WIDTH / 2,
+             // multiplying the dimensions like this allows us to present responsivness when the dimensions change.
              gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3);
     drawText(renderer,
              font,
@@ -442,12 +575,18 @@ void drawGameOverOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font
              gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.2);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Draws the scores from highest to lowest.
+///
+/// @param[in] gamestate a gamestate instance. Used to get the window dimensions and the scores.
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param [in] font  pointer to a TTF_Font
 void drawScores(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     int position = 1;
     for (auto score : gamestate.highscores)
     {
-        if (position > 3)
+        if (position > 3) // we only want to view the top 3 scores.
             break;
 
         std::string scoreText = std::to_string(position) + ". SCORE " + std::to_string(score.first) + "    LEVEL " + std::to_string(score.second);
@@ -456,10 +595,17 @@ void drawScores(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
                  font,
                  scoreText,
                  gamestate.WINDOW_WIDTH / 2,
+                 // again, this works responsively
                  gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3 + gamestate.WINDOW_HEIGHT * (position * 0.1));
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Draws the overlay that shows when the score board is open.
+///
+/// @param[in] gamestate a gamestate instance. Used to get the window dimensions and the scores.
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param [in] font  pointer to a TTF_Font
 void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
@@ -482,6 +628,7 @@ void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Fo
              font,
              text,
              gamestate.WINDOW_WIDTH / 2,
+             // responsive
              gamestate.WINDOW_HEIGHT / 2 - gamestate.WINDOW_HEIGHT * 0.3);
     drawText(renderer,
              font,
@@ -495,6 +642,12 @@ void drawScoreBoardOverlay(CGameState &gamestate, SDL_Renderer *renderer, TTF_Fo
              gamestate.WINDOW_HEIGHT / 2 + gamestate.WINDOW_HEIGHT * 0.4);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Handles drawing of all UI overlays.
+///
+/// @param[in] gamestate a gamestate instance. Used to get the window dimensions and the scores.
+/// @param [in] renderer  pointer to the SDL_Renderer
+/// @param [in] font  pointer to a TTF_Font
 void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 {
     std::string scoreText = "SCORE " + std::to_string(gamestate.score);
@@ -521,10 +674,12 @@ void drawGUI(CGameState &gamestate, SDL_Renderer *renderer, TTF_Font *font)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// Used to handle rendering. Runs once every frame.
+///
 /// @param[in] gamestate a gamestate variable
 /// @param[in] gameObjects a vector of unique pointers to game objects. Polymorphism applied here.
-///
-/// Used to handle rendering. Runs once every frame.
+/// @param [in] font  pointer to a TTF_Font
+/// @param [in] renderer  pointer to the SDL_Renderer
 void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &gameObjects, SDL_Renderer *renderer, TTF_Font *font)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -538,6 +693,9 @@ void draw(CGameState &gamestate, std::vector<std::unique_ptr<CGameObject>> &game
     SDL_RenderPresent(renderer);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Contains the game loop at the highest level as well as some initialization and cleanup.
+///
 int main()
 {
 
