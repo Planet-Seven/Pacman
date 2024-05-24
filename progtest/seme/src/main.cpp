@@ -12,17 +12,35 @@
 #include "CCoin.h"
 #include "CPowerUp.h"
 
-/*! \mainpage My Personal Index Page
+/*! \mainpage About the project
  *
  * \section intro_sec Introduction
  *
- * This is the introduction.
+ * This project was created as part of the Programming and Algorithmics 2 course, summer semester 2024 (B232) @ CTU, Prague. \n
+ * \n
+ * It is a simple PAC-MAN recreation. True to the original game, the individual ghosts all have different pathfinding algorithms.\n
+ * They pick the player's position as a target (contrary to the original game, where this differed for individual ghosts) and use \n
+ * different vector norms to calculate the optimal path. \n
+ * \n
+ * Three gamemodes are present. Chase, that is the default, when the player is being chased by the ghosts. Power-up, which occurs when \n
+ * the player eats one of the power pellets and can then eat the ghosts, who turn blue. And finally, guard, when the ghosts stop following \n
+ * the player and instead wander around a specific corridor. The duration of the latter two decreases with the player's progression through levels. \n
  *
- * \section install_sec Installation
+ * \section controls_sec Controls
  *
- * \subsection step1 Step 1: Opening the box
+ * While playing, the game is controlled with the arrow keys. \n
+ * When a game is over, the user is prompted to play again (space), or enter the leaderboards (h). \n
+ * In the leaderboard screen, the user can go back by pressing (h) again. \n
+ * \n
+ * To exit, press the (esc) key.
  *
- * etc...
+ * \section sources_sec Sources
+ *
+ * [1] Creating a game loop with C & SDL2 (Tutorial). Available here: https://www.youtube.com/watch?v=XfZ6WrV5Z7Y&ab_channel=pikuma \n
+ * [2] Stack overlflow, "How to render text in SDL2?". Available here: https://stackoverflow.com/questions/22886500/how-to-render-text-in-sdl2 \n
+ * [3] CPP reference. Available here: https://en.cppreference.com/w/ \n
+ * [4] Doxygen documentation. Available here: https://www.doxygen.nl/manual/index.html \n
+ * [5] Introduction to Doxygen. Available here: https://www.youtube.com/watch?v=5G1zUpNFmEY&ab_channel=John%27sBasement \n
  */
 
 ////////////////////////////////////////////////////////////////////////////////
