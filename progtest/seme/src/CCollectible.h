@@ -2,7 +2,7 @@
 #include "CGameObject.h"
 
 /** \class CCollectible
-An abstract class that serves as the parent class of individual collectible items.s
+An abstract class that serves as the parent class of individual collectible items.
 */
 class CCollectible : public CGameObject
 {

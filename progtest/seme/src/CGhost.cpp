@@ -49,7 +49,7 @@ void CGhost::update(CGameState &gamestate, double deltaTime)
 {
     double speed = gamestate.PLAYER_SPEED;
     if (gamestate.gamemode == CGameState::CGameMode::powerup)
-        speed *= 0.75;
+        speed *= gamestate.POWER_UP_GHOST_SLOWDOWN;
 
     setTargetPos(gamestate);
 
@@ -120,11 +120,11 @@ void CGhost::drawGhost(SDL_Renderer *renderer, CGameState &gamestate, int R, int
     else
         SDL_SetRenderDrawColor(renderer, 0, 0, 180, 255);
 
-    SDL_Rect manhattan =
+    SDL_Rect ghost =
         {
             static_cast<int>(gamestate.WINDOW_WIDTH / static_cast<double>(gamestate.gameMap.BOARDWIDTH) * currentPos.x),
             static_cast<int>(gamestate.WINDOW_HEIGHT / static_cast<double>(gamestate.gameMap.BOARDHEIGHT) * currentPos.y),
             static_cast<int>(gamestate.WINDOW_WIDTH / (static_cast<double>(gamestate.gameMap.BOARDWIDTH))),
             static_cast<int>(gamestate.WINDOW_HEIGHT / (static_cast<double>(gamestate.gameMap.BOARDHEIGHT)))};
-    SDL_RenderFillRect(renderer, &manhattan);
+    SDL_RenderFillRect(renderer, &ghost);
 }
