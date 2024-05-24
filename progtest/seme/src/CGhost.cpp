@@ -90,15 +90,15 @@ void CGhost::pickBestMove(CGameState &gamestate, std::vector<std::pair<CPos, CDi
     for (auto move : possibleMoves)
     {
         // while chasing, we want to pick the position closest to the player
-        if (gamestate.gamemode == CGameState::CGameMode::chase &&
-            getNorm(nextPos - gamestate.playerPos) > getNorm(move.first - gamestate.playerPos))
+        if (gamestate.gamemode != CGameState::CGameMode::powerup &&
+            getNorm(nextPos - targetPos) > getNorm(move.first - targetPos))
         {
             direction = move.second;
             nextPos = move.first;
         }
         // during a power up, we pick the opposite
         else if (gamestate.gamemode == CGameState::CGameMode::powerup &&
-                 getNorm(nextPos - gamestate.playerPos) < getNorm(move.first - gamestate.playerPos))
+                 getNorm(nextPos - targetPos) < getNorm(move.first - targetPos))
         {
             direction = move.second;
             nextPos = move.first;
