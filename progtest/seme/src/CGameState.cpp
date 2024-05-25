@@ -192,6 +192,9 @@ void CGameState::loadConfig()
     }
     else
         std::cout << "Error loading settings. Using default settings instead." << std::endl;
+
+    WINDOW_WIDTH = WINDOW_SCALE * gameMap.BOARDWIDTH; ///< recalculate width and height based on loaded data
+    WINDOW_HEIGHT = WINDOW_SCALE * gameMap.BOARDHEIGHT;
 }
 
 bool CGameState::isNextMoveLegal()
