@@ -18,7 +18,7 @@
  *
  * This project was created as part of the Programming and Algorithmics 2 course, summer semester 2024 (B232) @ CTU, Prague. \n
  * \n
- * It is a simple PAC-MAN recreation. True to the original game, the individual ghosts all have different pathfinding algorithms.\n
+ * It is a simple PAC-MAN recreation. True to the original game, the individual ghosts all have different pathfinding algorithms. \n
  * They pick the player's position as a target (contrary to the original game, where this differed for individual ghosts) and use \n
  * different vector norms to calculate the optimal path. \n
  * \n
@@ -33,6 +33,26 @@
  * In the leaderboard screen, the user can go back by pressing (h) again. \n
  * \n
  * To exit, press the (esc) key.
+ *
+ * \section conf_sec Config files
+ *
+ * The game is customizable via config files, that allow to change the map layout, effect duration and more. If no config file is loaded, default values are used. \n
+ * \n
+ * Here are the things you can modify: \n
+ * \n
+ * PLAYER_SPEED: Tiles/second. Same speed is used for ghost in chase mode. \n
+ * POWER_UP_GHOST_SLOWDOWN: Multiplier for ghost speed while a power-up is active \n
+ * INITIAL_POWERUP_TIME: 5; Seconds \n
+ * POWER_UP_TIME_DECREMENT: Seconds, decrement on level increase \n
+ * TIME_BETWEEN_GUARD_MODE: Seconds \n
+ * INITIAL_GUARD_TIME: Seconds \n
+ * GUARD_TIME_DECREMENT: Seconds, decrement on level increase \n
+ * WINDOW_SCALE Window scale * board width is the window width in pixels. Same goes for height. \n
+ * BOTTOM_PADDING In pixels \n
+ * FONT_SIZE \n
+ * BOARD_WIDTH Needed to correctly load the game board \n
+ * BOARD_HEIGHT Needed to correctly load the game board \n
+ * BOARD Game board \n
  *
  * \section sources_sec Sources
  *
