@@ -10,7 +10,7 @@ all: compile doc
 compile: $(BUILD_DIR)/main.o $(BUILD_DIR)/CGhost.o $(BUILD_DIR)/CManhattan.o $(BUILD_DIR)/CMax.o $(BUILD_DIR)/CEuclid.o $(BUILD_DIR)/CCollectible.o $(BUILD_DIR)/CCoin.o $(BUILD_DIR)/CPowerUp.o $(BUILD_DIR)/CGameState.o $(BUILD_DIR)/CPos.o
 	mkdir -p $(BUILD_DIR)
 	make deps
-	$(LD) $(CXXFLAGS) $^ -lSDL2 -lSDL2_ttf -o pacman
+	$(LD) $(CXXFLAGS) $^ -lSDL2 -lSDL2_ttf -o svobov25
 	touch $(BUILD_DIR)/highscores.txt
 
 
@@ -19,7 +19,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 run:
-	./pacman
+	./svobov25
 
 doc:
 	doxygen
@@ -36,7 +36,7 @@ cleandoc:
 
 cleancompile:
 	rm -r $(BUILD_DIR)
-	rm pacman
+	rm svobov25
 
 -include $(BUILD_DIR)/Makefile.d
 
