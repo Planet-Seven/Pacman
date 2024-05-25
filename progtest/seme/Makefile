@@ -1,13 +1,16 @@
-all: build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pacman
-	touch build/highscores.txt
-	doxygen
+CXX = g++
+CXXFLAGS = -Wall -pedantic -o2 -std=c++20
+BUILD_DIR = build
+SRC_DIR = src
 
-compile: build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 build/main.o build/CGhost.o build/CManhattan.o build/CMax.o build/CEuclid.o build/CCollectible.o build/CCoin.o build/CPowerUp.o build/CGameState.o build/CPos.o -lSDL2 -lSDL2_ttf -o pacman
-	touch build/highscores.txt
+all:
+	make compile
+	make doc
+
+compile: $(BUILD_DIR)/main.o $(BUILD_DIR)/CGhost.o $(BUILD_DIR)/CManhattan.o $(BUILD_DIR)/CMax.o $(BUILD_DIR)/CEuclid.o $(BUILD_DIR)/CCollectible.o $(BUILD_DIR)/CCoin.o $(BUILD_DIR)/CPowerUp.o $(BUILD_DIR)/CGameState.o $(BUILD_DIR)/CPos.o
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $^ -lSDL2 -lSDL2_ttf -o pacman
+	touch $(BUILD_DIR)/highscores.txt
 
 run:
 	./pacman
@@ -15,48 +18,48 @@ run:
 doc:
 	doxygen
 
-build/main.o: build/CGhost.o build/CCollectible.o build/CGameState.o build/CPos.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/main.cpp -o build/main.o
+$(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/CManhattan.h $(SRC_DIR)/CMax.h $(SRC_DIR)/CEuclid.h $(SRC_DIR)/CGhost.h $(SRC_DIR)/CCoin.h $(SRC_DIR)/CPowerUp.h $(SRC_DIR)/CCollectible.h $(SRC_DIR)/CPos.h $(SRC_DIR)/CGameState.h $(SRC_DIR)/CGameMap.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CGhost.o: build/CPos.o build/CGameState.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CGhost.cpp -o build/CGhost.o
+$(BUILD_DIR)/CGhost.o: $(SRC_DIR)/CGhost.cpp $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CCollectible.o: build/CPos.o build/CGameState.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CCollectible.cpp -o build/CCollectible.o
+$(BUILD_DIR)/CCollectible.o: $(SRC_DIR)/CCollectible.cpp $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CCoin.o: build/CPos.o build/CGameState.o build/CCollectible.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CCoin.cpp -o build/CCoin.o
+$(BUILD_DIR)/CCoin.o: $(SRC_DIR)/CCoin.cpp $(SRC_DIR)/CCollectible.h $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CPowerUp.o: build/CPos.o build/CGameState.o build/CCollectible.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CPowerUp.cpp -o build/CPowerUp.o
+$(BUILD_DIR)/CPowerUp.o: $(SRC_DIR)/CPowerUp.cpp $(SRC_DIR)/CCollectible.h $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CMax.o: build/CPos.o build/CGameState.o build/CGhost.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CMax.cpp -o build/CMax.o
+$(BUILD_DIR)/CMax.o: $(SRC_DIR)/CMax.cpp $(SRC_DIR)/CGhost.h $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CEuclid.o: build/CPos.o build/CGameState.o build/CGhost.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CEuclid.cpp -o build/CEuclid.o
+$(BUILD_DIR)/CEuclid.o: $(SRC_DIR)/CEuclid.cpp $(SRC_DIR)/CGhost.h $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CManhattan.o: build/CPos.o build/CGameState.o build/CGhost.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CManhattan.cpp -o build/CManhattan.o
+$(BUILD_DIR)/CManhattan.o: $(SRC_DIR)/CManhattan.cpp $(SRC_DIR)/CGhost.h $(SRC_DIR)/CPos.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CGameState.o: build/CPos.o
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20  -c src/CGameState.cpp -o build/CGameState.o
+$(BUILD_DIR)/CGameState.o: $(SRC_DIR)/CGameState.cpp $(SRC_DIR)/CPos.h $(SRC_DIR)/CGameMap.h
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-build/CPos.o:
-	mkdir -p build
-	g++ -Wall -pedantic -o2 -std=c++20 -c src/CPos.cpp -o build/CPos.o
+$(BUILD_DIR)/CPos.o: $(SRC_DIR)/CPos.cpp 
+	mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -r build
+	rm -r $(BUILD_DIR)
 	rm pacman
 	rm -r doc
 
